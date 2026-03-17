@@ -1,4 +1,4 @@
-name: component-manage
+name: "Build: component-manage"
 
 on:
   workflow_dispatch:
@@ -7,24 +7,16 @@ on:
       - 'component-manage/v*'
 
 jobs:
-  cross:
+  versions:
     runs-on: ubuntu-24.04
-    environment: swr
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
-      -
-        name: Login to SWR Docker Hub
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ vars.OCI_REGISTRY }}
-          username: ${{ vars.OCI_USERNAME }}
-          password: ${{ secrets.OCI_TOKEN }}
-
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v6
 
-      - 
-        name: Get Version
+      - name: Get Version
         id: version
         run: |
           if [[ $GITHUB_REF == refs/tags/component-manage/v* ]]; then
@@ -37,35 +29,71 @@ jobs:
             TAG="snapshot.${SHORT_SHA}"
             echo "🔧 Snapshot version: $VERSION"
           fi
-          
-          # 输出给后续 job 使用
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+  build:
+    needs: versions
+    strategy:
+      matrix:
+        name:
+        - component-manage
+        include:
+        - name: component-manage
+          workdir: ./component-manage
+          target: build-result
 
-      -
-        name: Build
-        uses: docker/bake-action@v7
-        with:
-          source: ./component-manage
-          push: true
-          provenance: false
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read # to fetch the repository content
+      # id-token: write # for signing attestation(s) with GitHub OIDC Token
+      packages: write # to push the built image to GitHub Container Registry
+    with:
+      context: ${{ matrix.workdir }}
+      target: ${{ matrix.target }}
+      output: image
+      push: true
+      platforms: linux/amd64,linux/arm64
+      set-meta-annotations: true
+      cache: true
+      cache-mode: max
+      sign: false
+      meta-tags: |
+        type=raw,value=${{ needs.versions.outputs.tag }}
+      meta-images: |
+        ghcr.io/${{ github.repository }}/${{ matrix.name }}
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+    
+  chart:
+    needs: [versions, build]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      
+      - name: Modify values.yaml
         env:
-          REPOSITORY_BASE: ${{ vars.OCI_BASEREPO }}
-          REGISTRY: ${{ vars.OCI_REGISTRY }}
-          VERSION: ${{ steps.version.outputs.version }}
-          TAG: ${{ steps.version.outputs.tag }}
-
-      -
-        name: Set up Helm
-        uses: azure/setup-helm@v4  
-
-      - name: Push Helm Chart
+          VALUES_FILE: component-manage/chart/component-manage/values.yaml
         run: |
-          echo ${{ secrets.GHCR_TOKEN }} | helm registry login ghcr.io -u pat --password-stdin
-          helm push ./component-manage/.buildx/charts/* oci://ghcr.io/kweaver-ai/charts
+          yq -i '.image.tag="${{ needs.versions.outputs.tag }}"'                  ${{ env.VALUES_FILE }}
+          yq -i '.image.repository="${{ github.repository }}/component-manage"'   ${{ env.VALUES_FILE }}
+          yq -i '.image.registry="ghcr.io"'                                       ${{ env.VALUES_FILE }}
+
+      - name: Chart | Push
+        uses: appany/helm-oci-chart-releaser@v0.5.0
+        with:
+          name: component-manage
+          registry: ghcr.io
+          repository: ${{ github.repository_owner }}/charts
+          registry_username: ${{ github.actor }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ needs.versions.outputs.version }}
+          path: component-manage/chart/component-manage
+
+
