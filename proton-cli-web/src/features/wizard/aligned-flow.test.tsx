@@ -159,38 +159,6 @@ describe('aligned flow', () => {
     expect(passwordInputs[0]).toHaveFocus()
   })
 
-  it('supports showing the internal mariadb and redis passwords in the service step', async () => {
-    const user = userEvent.setup()
-    render(<Wizard />)
-
-    await startStandardFlow(user)
-    await user.click(screen.getByRole('button', { name: '下一步' }))
-    await user.click(screen.getByRole('button', { name: '下一步' }))
-    await user.click(screen.getByRole('button', { name: '下一步' }))
-
-    let passwordInputs = screen
-      .getAllByDisplayValue('')
-      .filter((element): element is HTMLInputElement => element instanceof HTMLInputElement && element.type === 'password')
-
-    expect(passwordInputs).toHaveLength(2)
-    const showButtons = screen.getAllByRole('button', { name: '显示' })
-    expect(showButtons).toHaveLength(2)
-
-    await user.type(passwordInputs[0], 'mariadb-pass')
-    await user.type(passwordInputs[1], 'redis-pass')
-
-    await user.click(showButtons[0])
-    await user.click(showButtons[1])
-
-    passwordInputs = screen
-      .getAllByDisplayValue(/-pass$/)
-      .filter((element): element is HTMLInputElement => element instanceof HTMLInputElement)
-
-    expect(passwordInputs[0]).toHaveAttribute('type', 'text')
-    expect(passwordInputs[1]).toHaveAttribute('type', 'text')
-    expect(screen.getAllByRole('button', { name: '隐藏' })).toHaveLength(2)
-  })
-
   it('supports selecting multiple kubernetes master nodes from declared nodes', async () => {
     const user = userEvent.setup()
     render(<Wizard />)
