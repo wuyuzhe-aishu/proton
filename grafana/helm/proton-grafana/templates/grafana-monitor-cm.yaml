@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "grafana.name" . }}-monitor-cm
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "grafana.name" . }}
+data:
+  monitor.yaml: |
+    #monitor
+    # 系统分区挂载点
+    monitor.opensearch.vars.root={{ .Values.config.monitor.opensearch.root }}
+    # 热数据分区挂载点
+    monitor.opensearch.vars.hot={{ .Values.config.monitor.opensearch.hot }}
+    # 温数据分区挂载点
+    monitor.opensearch.vars.warm={{ .Values.config.monitor.opensearch.warm }}
+    # 系统分区存储设备
+    monitor.opensearch.vars.rootDev={{ .Values.config.monitor.opensearch.rootDev }}
+    # 热数据分区存储设备
+    monitor.opensearch.vars.hotDev={{ .Values.config.monitor.opensearch.hotDev }}
+    # 温数据分区存储设备
+    monitor.opensearch.vars.warmDev={{ .Values.config.monitor.opensearch.warmDev }}
+
+    # 巡检页面存储、内存、CPU、负载告警阈值
+    monitor.threshold.storage.warning.default={{ .Values.config.monitor.threshold.storage.warning }}
+    monitor.threshold.storage.critical.default={{ .Values.config.monitor.threshold.storage.critical }}
+    monitor.threshold.memory.warning.default={{ .Values.config.monitor.threshold.memory.warning }}
+    monitor.threshold.memory.critical.default={{ .Values.config.monitor.threshold.memory.critical }}
+    monitor.threshold.cpu.warning.default={{ .Values.config.monitor.threshold.cpu.warning }}
+    monitor.threshold.cpu.critical.default={{ .Values.config.monitor.threshold.cpu.critical }}
+    monitor.threshold.load1.warning.default={{ .Values.config.monitor.threshold.load1.warning }}
+    monitor.threshold.load1.critical.default={{ .Values.config.monitor.threshold.load1.critical }}
+    monitor.threshold.load5.warning.default={{ .Values.config.monitor.threshold.load5.warning }}
+    monitor.threshold.load5.critical.default={{ .Values.config.monitor.threshold.load5.critical }}
+    monitor.threshold.load15.warning.default={{ .Values.config.monitor.threshold.load15.warning }}
+    monitor.threshold.load15.critical.default={{ .Values.config.monitor.threshold.load15.critical }}

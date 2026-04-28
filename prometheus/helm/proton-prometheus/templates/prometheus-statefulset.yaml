@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "prometheus.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "prometheus.name" . }}
+spec:
+  serviceName: {{ template "prometheus.name" . }}
+  podManagementPolicy: Parallel
+  replicas: {{ .Values.replicaCount }}
+  updateStrategy:
+    type: "RollingUpdate"
+  selector:
+    matchLabels:
+      app: {{ template "prometheus.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "prometheus.name" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap/prometheus-config.yaml") . | sha256sum }}
+        checksum/rules: {{ include (print $.Template.BasePath "/configmap/prometheus-rules.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret/etcd-secret.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ template "prometheus.name" . }}
+      terminationGracePeriodSeconds: 300
+      restartPolicy: Always
+{{- with .Values.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+{{- end }}
+      dnsConfig:
+        options:
+          - name: single-request-reopen
+          - name: use-vc
+      initContainers:
+        - name: "init-chown-data"
+          image: {{ template "busybox.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["chown", "-R", "65534:65534", "/data"]
+          volumeMounts:
+          - name: data
+            mountPath: /data
+      containers:
+        - name: prometheus
+          image: {{ template "prometheus.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --config.file=/etc/config/promconfig/prometheus.yml
+            - --storage.tsdb.path=/data
+            - --storage.tsdb.retention.time={{ .Values.config.prometheus.retention }}
+            - --web.console.libraries=/etc/prometheus/console_libraries
+            - --web.console.templates=/etc/prometheus/consoles
+            - --web.enable-lifecycle
+            - --web.listen-address=0.0.0.0:9090
+          ports:
+            - name: prometheus
+              containerPort: 9090
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 30
+            failureThreshold: 40
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 30
+            failureThreshold: 40
+            successThreshold: 1
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config/promconfig
+            - name: rules-volume
+              mountPath: /etc/config/rules
+            {{- if .Values.secret.k8sEtcd.enabled }}
+            - name: k8s-etcd-certs
+              mountPath: /etc/ssl/k8s-etcd
+            {{- end }}
+            {{- if .Values.secret.protonEtcd.enabled }}
+            - name: proton-etcd-certs
+              mountPath: /etc/ssl/proton-etcd
+            {{- end }}
+            - name: data
+              mountPath: /data
+        - name: configmap-reload
+          image: {{ template "configmapReload.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --watched-dir=/etc/config/promconfig
+            - --watched-dir=/etc/config/rules
+            - --reload-url=http://127.0.0.1:{{ .Values.service.port }}/-/reload
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config/promconfig
+              readOnly: true
+            - name: rules-volume
+              mountPath: /etc/config/rules
+              readOnly: true
+          resources:
+            limits:
+              cpu: 100m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 10Mi
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ template "prometheus.name" . }}-config
+        - name: rules-volume
+          configMap:
+            name: {{ template "prometheus.name" . }}-rules
+        {{- if .Values.secret.k8sEtcd.enabled }}
+        - name: k8s-etcd-certs
+          secret:
+            secretName: {{ .Values.secret.k8sEtcd.secretName }}
+        {{- end }}
+        {{- if .Values.secret.protonEtcd.enabled }}
+        - name: proton-etcd-certs
+          secret:
+            secretName: {{ .Values.secret.protonEtcd.secretName }}
+        {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName }}
+        {{ else }}
+        storageClassName: ""
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.capacity }}

@@ -8,7 +8,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"math/big"
-	"os"
 	"path"
 	"time"
 
@@ -289,7 +288,7 @@ func (m *Manager) GeneratePrometheusK8SETCDCert() error {
 	if err != nil {
 		return fmt.Errorf("unable to parse k8s-etcd CA cert error: %w", err)
 	}
-	k8sETCDCAKeyRawText, err := os.ReadFile(K8SETCDCACertKey)
+	k8sETCDCAKeyRawText, err := mn.ECMS().Files().ReadFile(ctx, K8SETCDCACertKey)
 	if err != nil {
 		return fmt.Errorf("unable to read k8s-etcd CA key from filesystem error: %w", err)
 	}

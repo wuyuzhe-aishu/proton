@@ -74,9 +74,9 @@ describe('aligned flow', () => {
     expect(screen.getByText('chart与image的存储路径')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: '下一步' }))
-    expect(screen.getByText('Innodb_buffer_size')).toBeInTheDocument()
+    expect(screen.getAllByText('Innodb_buffer_size').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Requests.Memory').length).toBeGreaterThan(0)
-    expect(screen.getByText('Requests.CPU')).toBeInTheDocument()
+    expect(screen.getAllByText('Requests.CPU').length).toBeGreaterThan(0)
     expect(screen.getAllByText('数据路径').length).toBeGreaterThan(0)
     expect(screen.getAllByText('JVM配置').length).toBeGreaterThan(0)
     expect(screen.getByText('低警戒水位线')).toBeInTheDocument()
@@ -121,9 +121,9 @@ describe('aligned flow', () => {
     await user.click(screen.getByRole('button', { name: '下一步' }))
     await user.click(screen.getByRole('button', { name: '下一步' }))
 
-    expect(screen.getByText('Requests.CPU')).toBeInTheDocument()
+    expect(screen.getAllByText('Requests.CPU').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Requests.Memory').length).toBeGreaterThan(0)
-    expect(screen.getByText('Limits.CPU')).toBeInTheDocument()
+    expect(screen.getAllByText('Limits.CPU').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Limits.Memory').length).toBeGreaterThan(0)
     expect(screen.queryByText('对外暴露端口')).not.toBeInTheDocument()
     expect(screen.queryByText('服务名称')).not.toBeInTheDocument()

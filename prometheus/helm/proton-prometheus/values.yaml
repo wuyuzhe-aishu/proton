@@ -1,0 +1,90 @@
+namespace: resource
+
+#环境变量：语言/时区
+env:
+  language: en_US.UTF-8
+  timezone: Asia/Shanghai
+
+replicaCount: 1
+
+nodeSelector: {}
+
+image:
+  registry: acr.aishu.cn
+  pullPolicy: IfNotPresent
+  prometheus:
+    repository: public/prometheus
+    tag: v2.37.8
+  busybox:
+    repository: public/busybox
+    tag: 1.36.1
+  configmapReload:
+    repository: public/prometheus-config-reloader
+    tag: v0.66.0
+
+service:
+  enableDualStack: false
+  prometheus:
+    type: ClusterIP #NodePort
+    port: 9090
+    nodePort: 30001
+
+secret:
+  k8sEtcd:
+    enabled: true
+    secretName: etcd-certs
+    caName: ca.crt
+    certName: healthcheck-client.crt
+    keyName: healthcheck-client.key
+  protonEtcd:
+    enabled: true
+    secretName: etcdssl-secret
+    caName: ca.crt
+    certName: peer.crt
+    keyName: peer.key
+
+config:
+  prometheus:
+    retention: 15d
+    alertmanager: false
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    scrape_slow_interval: 5m
+    scrape_slow_timeout: 30s
+  rules:
+    pending_time: 1m
+    node:
+      cpu_usage:
+        warning: 85
+      mem_usage:
+        warning: 85
+      disk_usage:
+        warning: 70
+        critical: 80
+      inodes_usage:
+        warning: 85
+      disk_read_rate:
+        warning: 50
+      disk_write_rate:
+        warning: 50
+      network_throughput_in:
+        warning: 100
+      network_throughput_out:
+        warning: 100
+
+# 数据持久化存储配置
+storage:
+  capacity: 10Gi
+  storageClassName: ""
+  local:
+    0:
+      host: node0
+      path: /sysvol/prometheus
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+  limits:
+    cpu: 1000m
+    memory: 3Gi

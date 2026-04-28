@@ -1,0 +1,26 @@
+{{- if .Values.service.grafana.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ template "grafana.name" . }}-ingress
+  annotations:
+    #nginx.ingress.kubernetes.io/rewrite-target: "/"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+{{- if $.Values.service.ingressclassname }}
+  ingressClassName: {{ $.Values.service.ingressclassname }}
+{{- end }}
+  rules:
+    - http:
+        paths:
+{{- with .Values.service.grafana.ingress.interface.grafana }}
+          - path: {{ .path }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ template "grafana.name" $ }}
+                port:
+                  number: {{ .value }}
+{{- end }}
+{{- end }}

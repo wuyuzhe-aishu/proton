@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "grafana.name" . }}-datasource-cm
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "grafana.name" . }}
+data:
+  datasource.yaml: |
+    apiVersion: 1
+
+    # list of datasources that should be deleted from the database
+    deleteDatasources:
+      - name: Prometheus
+        orgId: 1
+
+    # list of datasources to insert/update depending
+    # whats available in the database
+    datasources:
+      # <string, required> name of the datasource. Required
+    {{- if .Values.config.datasource.prometheus.enabled }}
+    {{ with .Values.config.datasource.prometheus }}
+    - name: Prometheus
+      # <string, required> datasource type. Required
+      type: prometheus
+      # <string, required> access mode. direct or proxy. Required
+      access: proxy
+      # <int> org id. will default to orgId 1 if not specified
+      orgId: 1
+      # <string> url
+      url: {{ .protocol }}://{{ .host }}:{{ .port }}
+      # <bool> mark as default datasource. Max one per org
+      isDefault: true
+      version: 1
+      # <bool> allow users to edit datasources from the UI.
+      editable: true
+    {{- end }}
+    {{- end }}
+
+    {{- if .Values.config.datasource.uniquery -}}
+    {{- if .Values.config.datasource.uniquery.enabled }}
+    {{ with .Values.config.datasource.uniquery }}
+    - name: uniquery
+      type: anyrobot
+      access: proxy
+      orgId: 1
+      url: {{ .protocol }}://{{ .host }}:{{ .port }}
+      isDefault: false
+      version: 1
+      editable: true
+      jsonData:
+        dataViewUrl: {{ .dataManagerProtocol }}://{{ .dataManagerHost }}:{{ .dataManagerPort }}
+
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    {{- if .Values.config.datasource.metricModel -}}
+    {{- if .Values.config.datasource.metricModel.enabled }}
+    {{ with .Values.config.datasource.metricModel }}
+    - name: metric-model
+      type: anyrobot-metric-model
+      access: proxy
+      orgId: 1
+      url: {{ .protocol }}://{{ .host }}:{{ .port }}
+      isDefault: false
+      version: 1
+      editable: true
+      jsonData:
+        dataModelUrl: {{ .dataModelUrlProtocol }}://{{ .dataModelUrlHost }}:{{ .dataModelUrlPort }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+

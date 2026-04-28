@@ -1,0 +1,29 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "prometheus.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "prometheus.name" . }}
+spec:
+{{- if .Values.service.enableDualStack }}
+  ipFamilies:
+  - IPv6
+  - IPv4
+  ipFamilyPolicy: PreferDualStack
+{{- end }}
+{{- if ne .Values.service.prometheus.type "None" }}
+  type: {{ .Values.service.prometheus.type }}
+{{- else }}
+  clusterIP: None
+{{- end }}
+  selector:
+    app: {{ template "prometheus.name" . }}
+  ports:
+    - name: prometheus
+      port: {{ .Values.service.prometheus.port }}
+      protocol: TCP
+      targetPort: prometheus
+      {{- if or (eq .Values.service.prometheus.type "NodePort") (eq .Values.service.prometheus.type "LoadBalancer") }}
+      nodePort: {{ .Values.service.prometheus.nodePort }}
+      {{- end }}

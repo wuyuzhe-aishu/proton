@@ -1,0 +1,107 @@
+def CheckoutCode() {
+    echo "CheckoutCode, VERSION is ${VERSION}"
+    dir("${WORKSPACE}/${APP_NAME}-${BUILD_NUMBER}") {
+       checkout(
+            scm: [
+                $class: 'GitSCM',
+                branches: [[name: "*/${BRANCH_NAME}"]],
+                extensions: [
+                    [$class: 'CloneOption', depth: 0, noTags: true, honorRefspec : true, shallow: true]
+                ],
+                userRemoteConfigs: [
+                    [
+                        url: 'https://gitlab.aishu.cn/anyrobot/thirdapp/monitor/prometheus.git',
+                        credentialsId: 'gitlab-id'
+                    ]
+                ]
+            ]
+        )
+    }
+}
+
+
+def GetVersion() {
+    VERSION = sh(script: "cat VERSION", returnStdout: true).trim()
+    if (BRANCH_NAME =~ "^develop.*") {
+        VERSION = "${VERSION}-develop"
+    } else if (BRANCH_NAME =~ "^release-.*") {
+        VERSION = sh(script: "cat VERSION", returnStdout: true).trim()
+    }else{
+        VERSION = "${VERSION}-${BRANCH_NAME}"
+    }
+    return VERSION
+}
+
+pipeline {
+    agent {
+        node {
+            label "amd64"
+        }
+    }
+
+    environment {
+        VERSION = GetVersion()
+        APP_NAME = "prometheus"
+        DOCKER_HUB_USER = "proton"
+        DOCKER_HUB_PASSWORD = "3ntIKegyn8"
+        DOCKER_HUB_URL = "acr.aishu.cn"
+        IMAGE_URL="acr.aishu.cn/ar/prometheus"
+        FTP_URL="ftp-ar.aishu.cn"
+        FTP_USER="ftp-ar"
+        FTP_PASSWORD="F64edf#s"
+    }
+
+    stages {
+
+        stage("push helm charts") {
+            steps {
+                CheckoutCode()
+                dir("${WORKSPACE}/${APP_NAME}-${BUILD_NUMBER}") {
+                    script {
+                        sh "sed -i 's/^version:.*\$/version: \"${VERSION}\"/g' ./helm/Chart.yaml"
+                        sh "sed -i 's/^appVersion:.*\$/appVersion: \"${VERSION}\"/g' ./helm/Chart.yaml"
+                        sh "helm push  --username ${DOCKER_HUB_USER} --password ${DOCKER_HUB_PASSWORD}  ./helm acr"
+                    }
+                }
+            }
+        }
+
+        stage("build Package") {
+            steps {
+                CheckoutCode()
+                dir("${WORKSPACE}/${APP_NAME}-${BUILD_NUMBER}") {
+                    script {
+                        sh "cp -r scripts ${APP_NAME}-scripts"
+                        sh "tar -zcf ${APP_NAME}-scripts-${VERSION}.tar.gz ${APP_NAME}-scripts"
+
+                        sh "mv helm ${APP_NAME}"
+                        sh "tar -zcvf ${APP_NAME}-charts-${VERSION}.tar.gz ${APP_NAME}"
+
+                        sh "ftp -n<<EOF \n\
+                            open ${FTP_URL} \n\
+                            user ${FTP_USER} ${FTP_PASSWORD} \n\
+                            binary \n\
+                            mkdir /data/ftp/${BRANCH_NAME} \n\
+                            mkdir /data/ftp/${BRANCH_NAME}/thirdapp \n\
+                            mkdir /data/ftp/${BRANCH_NAME}/thirdapp/${APP_NAME} \n\
+                            cd /data/ftp/${BRANCH_NAME}/thirdapp/${APP_NAME} \n\
+                            prompt off \n\
+                            put ${APP_NAME}-scripts-${VERSION}.tar.gz \n\
+                            put ${APP_NAME}-charts-${VERSION}.tar.gz \n\
+                            close \n\
+                            bye \n\
+                            EOF"
+                    }
+                }
+            }
+        }
+
+        stage("cleanup workspace") {
+            steps{
+                script {
+                    sh "rm -rf ${WORKSPACE}/${APP_NAME}-${BUILD_NUMBER}"
+                }
+            }
+        }
+    }
+}

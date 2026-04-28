@@ -1,0 +1,119 @@
+# Prometheus configuration format https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "prometheus.name" . }}-rules
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "prometheus.name" . }}
+data:
+  deployment-stats-alert.rules: |+
+    groups:
+    - name: DeploymentStatsAlert
+      rules:
+      - alert: DeploymentDown
+        expr: sum(kube_deployment_status_replicas_unavailable{})by(deployment,namespace) > 0
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Deployment {{`{{ $labels.deployment }}`}} down"
+          description: "Deployment {{`{{ $labels.deployment }}`}} of namespace {{`{{ $labels.namespace }}`}} has been down for more than 1 minutes."
+
+  k8s-nodestats-alert.rules: |+
+    groups:
+    - name: K8sNodeStatsAlert
+      rules:
+      - alert: NodeCpuUsageAlert
+        expr: sum(avg without (cpu)(irate(node_cpu_seconds_total{job="node-exporter",mode!='idle'}[5m]))) by (instance) * 100 > {{ .Values.config.rules.node.cpu_usage.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Node {{`{{ $labels.instance }}`}} CPU usgae high"
+          description: "Node {{`{{ $labels.instance }}`}} CPU usage above {{ .Values.config.rules.node.cpu_usage.warning }}% (current value: {{`{{ $value }}`}})"
+      - alert: NodeMemUsageAlert
+        expr: (node_memory_MemTotal_bytes{job="node-exporter"} - node_memory_MemAvailable_bytes{job="node-exporter"})/node_memory_MemTotal_bytes{job="node-exporter"} * 100 > {{ .Values.config.rules.node.mem_usage.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Node {{`{{ $labels.instance }}`}} MEM usgae high"
+          description: "Node {{`{{ $labels.instance }}`}} MEM usage above {{ .Values.config.rules.node.mem_usage.warning }}% (current value: {{`{{ $value }}`}})"
+      - alert: NodeDown
+        expr: node_exporter_build_info == 0
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node {{`{{ $labels.name }}`}} down"
+          description: "Node {{`{{ $labels.name }}`}} has been down for more than 1 minutes."
+      - alert: UnusualNetworkThroughputIn
+        expr: sum by (instance) (irate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > {{ .Values.config.rules.node.network_throughput_in.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Unusual network throughput in (Node {{`{{ $labels.instance }}`}})"
+          description: "Host network interfaces are probably receiving too much data (> {{ .Values.config.rules.node.network_throughput_in.warning }} MB/s)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"
+      - alert: UnusualNetworkThroughputOut
+        expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > {{ .Values.config.rules.node.network_throughput_out.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Unusual network throughput out (instance {{`{{ $labels.instance }}`}})"
+          description: "Host network interfaces are probably sending too much data (> {{ .Values.config.rules.node.network_throughput_out.warning }} MB/s)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"
+      - alert: UnusualDiskReadRate
+        expr: sum by (instance) (irate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > {{ .Values.config.rules.node.disk_read_rate.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Unusual disk read rate (instance {{`{{ $labels.instance }}`}})"
+          description: "Disk is probably reading too much data (> {{ .Values.config.rules.node.disk_read_rate }} MB/s)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"
+      - alert: UnusualDiskWriteRate
+        expr: sum by (instance) (irate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > {{ .Values.config.rules.node.disk_write_rate.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Unusual disk write rate (instance {{`{{ $labels.instance }}`}})"
+          description: "Disk is probably writing too much data (> {{ .Values.config.rules.node.disk_write_rate.warning }} MB/s)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"
+      - alert: OutOfDiskSpace
+        expr: (1 - node_filesystem_free_bytes{mountpoint ="/"} / node_filesystem_size_bytes{mountpoint ="/"}) * 100 > {{ .Values.config.rules.node.disk_usage.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Out of disk space (instance {{`{{ $labels.instance }}`}})"
+          description: "Disk is almost full (used > {{ .Values.config.rules.node.disk_usage.warning }}%)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"
+      - alert: OutOfInodes
+        expr: (1 - node_filesystem_files_free{mountpoint ="/"} / node_filesystem_files{mountpoint ="/"}) * 100 > {{ .Values.config.rules.node.inodes_usage.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Out of inodes (instance {{`{{ $labels.instance }}`}})"
+          description: "Disk is almost running out of available inodes (used > {{ .Values.config.rules.node.inodes_usage.warning }}%)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"
+
+  storage-alert.rules: |-
+    groups:
+    - name: StorageStatsAlert
+      rules:
+      - alert: OutOfDiskSpace
+        expr: (node_filesystem_size_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}-node_filesystem_free_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}) *100/(node_filesystem_avail_bytes {fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}+node_filesystem_size_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}-node_filesystem_free_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"})  > {{ .Values.config.rules.node.disk_usage.warning }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: warning
+        annotations:
+          summary: "Out of disk space (instance {{`{{ $labels.instance }}`}})"
+          description: "Disk is almost full (used > {{ .Values.config.rules.node.disk_usage.warning }}%)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"
+      - alert: OutOfDiskSpace
+        expr: (node_filesystem_size_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}-node_filesystem_free_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}) *100/(node_filesystem_avail_bytes {fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}+node_filesystem_size_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"}-node_filesystem_free_bytes{fstype=~"ext.*|xfs",mountpoint =~"/ssd.*|/sas|/"})  > {{ .Values.config.rules.node.disk_usage.critical }}
+        for: {{ .Values.config.rules.pending_time }}
+        labels:
+          severity: critical
+        annotations:
+          summary: "Out of disk space (instance {{`{{ $labels.instance }}`}})"
+          description: "Disk is almost full (used > {{ .Values.config.rules.node.disk_usage.critical }}%)\n  VALUE = {{`{{ $value }}`}}\n  LABELS: {{`{{ $labels }}`}}"

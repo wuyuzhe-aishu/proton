@@ -1,0 +1,90 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - "feature-*"
+      - "feature/*"
+      - "develop"
+      - "release-*"
+      - "release/*"
+
+variables:
+  - group: anyrobot-global-config
+  - name: IMAGE_REGISTRY
+    value: "acr.aishu.cn"
+  - name: CHART_REPO
+    value: "https://acr.aishu.cn/api/chartrepo/proton/charts"
+  - name: CHART_NAME
+    value: "proton-prometheus"
+  - name: IS_RELEASE
+    value: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/release')]
+  - name: YQ_IMAGE
+    value: "acr.aishu.cn/public/mikefarah/yq:4.33.3"
+
+stages:
+  - stage: ChartPush
+    displayName: Chart构建
+    jobs:
+      - job: ChartPush
+        displayName: Chart构建
+        workspace:
+          clean: all
+        pool:
+          name: anyrobot-pools
+          demands:
+            - Agent.OSArchitecture -equals X64
+            - Agent.OS -equals Linux
+            - docker
+        steps:
+          - checkout: self
+
+          - task: Bash@3
+            displayName: Chart构建
+            inputs:
+              targetType: inline
+              script: |
+                #!/usr/bin/env
+                set -ex
+
+                VERSION=`cat VERSION`
+                CURRENT_TAG="${VERSION}-$(Build.SourceBranchName).$(Build.BuildId)"
+                LATEST_TAG="${VERSION}-$(Build.SourceBranchName)"
+                if [ $(IS_RELEASE) = True ]; then
+                  CURRENT_TAG="${VERSION}-$(Build.BuildId)"
+                  LATEST_TAG="${VERSION}"
+                fi
+
+                chmod 777 -R $(pwd)/helm
+                docker run --rm \
+                      -v $(pwd)/helm:/chart \
+                      --entrypoint='' \
+                      $(YQ_IMAGE) sh -c "
+                  set -ex
+
+                  yq eval -i '.image.registry = \"$(IMAGE_REGISTRY)\"' /chart/proton-prometheus/values.yaml
+
+                  yq eval -i '.appVersion = \"${CURRENT_TAG}\"' /chart/proton-prometheus/Chart.yaml
+
+                  yq eval -i '.version = \"${CURRENT_TAG}\"' /chart/proton-prometheus/Chart.yaml
+                  cd /chart && tar -czf $(CHART_NAME)-${CURRENT_TAG}.tar.gz proton-prometheus
+
+                  yq eval -i '.version = \"${LATEST_TAG}\"' /chart/proton-prometheus/Chart.yaml
+                  cd /chart && tar -czf $(CHART_NAME)-${LATEST_TAG}.tar.gz proton-prometheus
+                  "
+
+                cd helm
+                curlOptions="-s -u $(registry.username):$(registry.password) -H \"Content-Type:multipart/form-data\""
+                curl ${curlOptions} -F "chart=@$(CHART_NAME)-${CURRENT_TAG}.tar.gz;type=application/x-compressed-tar" -X POST "$(CHART_REPO)"
+                curl ${curlOptions} -F "chart=@$(CHART_NAME)-${LATEST_TAG}.tar.gz;type=application/x-compressed-tar" -X POST "$(CHART_REPO)"
+
+          - task: Post-Bash@3
+            inputs:
+              targetType: inline
+              script: |
+                rm -rf $(Build.SourcesDirectory)
+                ls -lah $(Agent.BuildDirectory)

@@ -182,28 +182,17 @@ function validateManagedCluster(state: WizardState, issues: ValidationIssue[]) {
 }
 
 function validateManagedService(
-  enabled: boolean,
   replicaCount: number,
-  storageClassName: string,
   field: string,
   label: string,
   issues: ValidationIssue[],
 ) {
-  if (!enabled) {
-    return
-  }
-
   if (replicaCount < 1) {
     push(issues, `${field}.replica_count`, `Managed ${label} requires replica_count >= 1.`)
-  }
-
-  if (isBlank(storageClassName)) {
-    push(issues, `${field}.storageClassName`, `Managed ${label} requires a storage class.`)
   }
 }
 
 function validateLocalService(
-  enabled: boolean,
   hosts: string[],
   dataPath: string,
   field: string,
@@ -211,10 +200,6 @@ function validateLocalService(
   nodeNames: Set<string>,
   issues: ValidationIssue[],
 ) {
-  if (!enabled) {
-    return
-  }
-
   if (!hosts.length) {
     push(issues, `${field}.hosts`, `Local ${label} requires at least one host.`)
   }
@@ -420,7 +405,6 @@ export function validateWizardState(state: WizardState): ValidationResult {
 
   if (isManagedInternally(state, 'mariadb')) {
     validateLocalService(
-      state.services.mariadb.local.enabled,
       state.services.mariadb.local.hosts,
       state.services.mariadb.local.data_path,
       'services.mariadb.local',
@@ -429,9 +413,7 @@ export function validateWizardState(state: WizardState): ValidationResult {
       issues,
     )
     validateManagedService(
-      state.services.mariadb.managed.enabled,
       state.services.mariadb.managed.replica_count,
-      state.services.mariadb.managed.storageClassName,
       'services.mariadb.managed',
       'MariaDB',
       issues,
@@ -446,7 +428,6 @@ export function validateWizardState(state: WizardState): ValidationResult {
 
   if (isManagedInternally(state, 'redis')) {
     validateLocalService(
-      state.services.redis.local.enabled,
       state.services.redis.local.hosts,
       state.services.redis.local.data_path,
       'services.redis.local',
@@ -455,9 +436,7 @@ export function validateWizardState(state: WizardState): ValidationResult {
       issues,
     )
     validateManagedService(
-      state.services.redis.managed.enabled,
       state.services.redis.managed.replica_count,
-      state.services.redis.managed.storageClassName,
       'services.redis.managed',
       'Redis',
       issues,
@@ -472,7 +451,6 @@ export function validateWizardState(state: WizardState): ValidationResult {
 
   if (isManagedInternally(state, 'opensearch')) {
     validateLocalService(
-      state.services.opensearch.local.enabled,
       state.services.opensearch.local.hosts,
       state.services.opensearch.local.data_path,
       'services.opensearch.local',
@@ -481,9 +459,7 @@ export function validateWizardState(state: WizardState): ValidationResult {
       issues,
     )
     validateManagedService(
-      state.services.opensearch.managed.enabled,
       state.services.opensearch.managed.replica_count,
-      state.services.opensearch.managed.storageClassName,
       'services.opensearch.managed',
       'OpenSearch',
       issues,
@@ -492,7 +468,6 @@ export function validateWizardState(state: WizardState): ValidationResult {
 
   if (isManagedInternally(state, 'mq')) {
     validateLocalService(
-      state.services.kafka.local.enabled,
       state.services.kafka.local.hosts,
       state.services.kafka.local.data_path,
       'services.kafka.local',
@@ -501,7 +476,6 @@ export function validateWizardState(state: WizardState): ValidationResult {
       issues,
     )
     validateLocalService(
-      state.services.zookeeper.local.enabled,
       state.services.zookeeper.local.hosts,
       state.services.zookeeper.local.data_path,
       'services.zookeeper.local',
@@ -510,17 +484,13 @@ export function validateWizardState(state: WizardState): ValidationResult {
       issues,
     )
     validateManagedService(
-      state.services.kafka.managed.enabled,
       state.services.kafka.managed.replica_count,
-      state.services.kafka.managed.storageClassName,
       'services.kafka.managed',
       'Kafka',
       issues,
     )
     validateManagedService(
-      state.services.zookeeper.managed.enabled,
       state.services.zookeeper.managed.replica_count,
-      state.services.zookeeper.managed.storageClassName,
       'services.zookeeper.managed',
       'ZooKeeper',
       issues,
@@ -539,6 +509,36 @@ export function validateWizardState(state: WizardState): ValidationResult {
       push(issues, 'services.zookeeper.local.hosts', 'ZooKeeper local hosts only support 1 or 3 nodes.')
     }
   }
+
+  validateLocalService(
+    state.services.prometheus.local.hosts,
+    state.services.prometheus.local.data_path,
+    'services.prometheus.local',
+    'Prometheus',
+    nodeNames,
+    issues,
+  )
+  validateManagedService(
+    state.services.prometheus.managed.replica_count,
+    'services.prometheus.managed',
+    'Prometheus',
+    issues,
+  )
+
+  validateLocalService(
+    state.services.grafana.local.hosts,
+    state.services.grafana.local.data_path,
+    'services.grafana.local',
+    'Grafana',
+    nodeNames,
+    issues,
+  )
+  validateManagedService(
+    state.services.grafana.managed.replica_count,
+    'services.grafana.managed',
+    'Grafana',
+    issues,
+  )
 
   validateRds(state.resource_connect_info.rds, issues)
   validateRedis(state.resource_connect_info.redis, issues)

@@ -1,0 +1,2708 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 2,
+  "id": 15,
+  "links": [
+    {
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "巡检",
+      "tooltip": "查看巡检仪表盘",
+      "type": "link",
+      "url": "d/A-01"
+    },
+    {
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "主机",
+      "tooltip": "查看主机监控",
+      "type": "link",
+      "url": "d/B-01"
+    },
+    {
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "OpenSearch存储",
+      "tooltip": "查看存储监控",
+      "type": "link",
+      "url": "d/C-01"
+    },
+    {
+      "asDropdown": true,
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [
+        "product",
+        "kubernetes",
+        "anyrobot",
+        "monitor"
+      ],
+      "title": "Kubernetes",
+      "type": "dashboards"
+    },
+    {
+      "asDropdown": true,
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [
+        "product",
+        "anyrobot",
+        "app",
+        "monitor"
+      ],
+      "title": "应用",
+      "type": "dashboards"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 166,
+      "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "日志数据流监控",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 229,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "日志接收器",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 2,
+        "x": 4,
+        "y": 1
+      },
+      "id": 230,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "id": 231,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(irate(kafka_topic_partition_current_offset{namespace=~\"resource\",topic=\"kafka_topic\"}[5m]))",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Kafka_生产速率",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(kafka_consumergroup_lag{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"kafka_topic\"})",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Kafka_堆积数",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(irate(kafka_consumergroup_current_offset{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"kafka_topic\"}[5m]))",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Kafka_消费速率",
+          "refId": "C"
+        }
+      ],
+      "title": "日志队列",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 2,
+        "x": 12,
+        "y": 1
+      },
+      "id": 232,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 4,
+        "x": 14,
+        "y": 1
+      },
+      "id": 233,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "日志解析器",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 2,
+        "x": 18,
+        "y": 1
+      },
+      "id": 234,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 296,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "日志存储库",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 2
+      },
+      "id": 183,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:698",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:699",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "options": {
+        "autoSizeColumns": true,
+        "autoSizePolygons": true,
+        "autoSizeRows": true,
+        "compositeConfig": {
+          "animationSpeed": "2500",
+          "composites": [
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 1",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Input_(.*)"
+                }
+              ],
+              "name": "Input",
+              "order": 0,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            },
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 2",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Kafka_(.*)"
+                }
+              ],
+              "name": "Kafka",
+              "order": 1,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            },
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 3",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Dir-monitor_(.*)"
+                }
+              ],
+              "name": "Dir-monitor",
+              "order": 2,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            }
+          ],
+          "enabled": true
+        },
+        "ellipseCharacters": 18,
+        "ellipseEnabled": false,
+        "globalAutoScaleFonts": true,
+        "globalClickthrough": "",
+        "globalClickthroughNewTabEnabled": false,
+        "globalClickthroughSanitizedEnabled": false,
+        "globalDecimals": 10,
+        "globalDisplayMode": "all",
+        "globalDisplayTextTriggeredEmpty": "",
+        "globalFillColor": "#37872D",
+        "globalFontSize": 12,
+        "globalGradientsEnabled": false,
+        "globalOperator": "last",
+        "globalPolygonBorderColor": "black",
+        "globalPolygonBorderSize": 2,
+        "globalPolygonSize": 50,
+        "globalRegexPattern": "",
+        "globalShape": "hexagon_pointed_top",
+        "globalShowTooltipColumnHeadersEnabled": true,
+        "globalShowValueEnabled": true,
+        "globalTextFontAutoColor": "#000000",
+        "globalTextFontAutoColorEnabled": true,
+        "globalTextFontColor": "",
+        "globalTextFontFamily": "Roboto",
+        "globalThresholdsConfig": [],
+        "globalTooltipsEnabled": true,
+        "globalTooltipsFontFamily": "Roboto",
+        "globalTooltipsShowTimestampEnabled": true,
+        "globalUnitFormat": "short",
+        "layoutDisplayLimit": 100,
+        "layoutNumColumns": 8,
+        "layoutNumRows": 8,
+        "overrideConfig": {
+          "overrides": [
+            {
+              "alias": "",
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "colors": [
+                "#299c46",
+                "#e5ac0e",
+                "#bf1b00",
+                "#4040a0"
+              ],
+              "decimals": 3,
+              "enabled": true,
+              "label": "OVERRIDE 1",
+              "metricName": ".*速率",
+              "operatorName": "last",
+              "order": 0,
+              "prefix": "",
+              "scaledDecimals": 0,
+              "suffix": "",
+              "thresholds": [
+                {
+                  "color": "#8a8a8a",
+                  "state": 0,
+                  "value": 0
+                },
+                {
+                  "color": "#299c46",
+                  "state": 0,
+                  "value": 1
+                }
+              ],
+              "unitFormat": "eps"
+            }
+          ]
+        },
+        "panelId": 0,
+        "radius": 100,
+        "sortByDirection": 1,
+        "sortByField": "name",
+        "tooltipDisplayMode": "all",
+        "tooltipDisplayTextTriggeredEmpty": "",
+        "tooltipPrimarySortByField": "thresholdLevel",
+        "tooltipPrimarySortDirection": 2,
+        "tooltipSecondarySortByField": "value",
+        "tooltipSecondarySortDirection": 2
+      },
+      "pluginVersion": "2.0.9",
+      "repeat": "input_pod",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(logstash_events_in{namespace=~\"$namespace\",pod=\"$input_pod\"}[5m]))",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Input_输入速率",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(logstash_events_filtered{namespace=~\"$namespace\",pod=\"$input_pod\"}[5m]))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Input_处理速率",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(logstash_events_out{namespace=~\"$namespace\",pod=\"$input_pod\"}[5m]))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Input_输出速率",
+          "refId": "C"
+        }
+      ],
+      "title": "$input_pod",
+      "type": "grafana-polystat-panel"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 4,
+        "y": 2
+      },
+      "id": 184,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "\r\n<br />\r\n\t<br />\r\n\t<br />\r\n<p> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-----></p>\r\n<br />\r\n\t<br />\r\n\t<br />\r\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "repeat": "input_pod",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 2
+      },
+      "id": 185,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:286",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:287",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "options": {
+        "autoSizeColumns": true,
+        "autoSizePolygons": true,
+        "autoSizeRows": true,
+        "compositeConfig": {
+          "animationSpeed": "2500",
+          "composites": [
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 1",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Kafka_(生产速率)"
+                }
+              ],
+              "name": "Kafka",
+              "order": 0,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            },
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 2",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Kafka_(堆积数)"
+                }
+              ],
+              "name": "Kafka",
+              "order": 1,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            },
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 3",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Kafka_(消费速率)"
+                }
+              ],
+              "name": "Kafka",
+              "order": 2,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            }
+          ],
+          "enabled": true
+        },
+        "ellipseCharacters": 18,
+        "ellipseEnabled": false,
+        "globalAutoScaleFonts": true,
+        "globalClickthrough": "",
+        "globalClickthroughNewTabEnabled": false,
+        "globalClickthroughSanitizedEnabled": false,
+        "globalDecimals": 2,
+        "globalDisplayMode": "all",
+        "globalDisplayTextTriggeredEmpty": "",
+        "globalFillColor": "#37872D",
+        "globalFontSize": 12,
+        "globalGradientsEnabled": false,
+        "globalOperator": "last",
+        "globalPolygonBorderColor": "black",
+        "globalPolygonBorderSize": 2,
+        "globalPolygonSize": 50,
+        "globalRegexPattern": "",
+        "globalShape": "hexagon_pointed_top",
+        "globalShowTooltipColumnHeadersEnabled": true,
+        "globalShowValueEnabled": true,
+        "globalTextFontAutoColor": "#000000",
+        "globalTextFontAutoColorEnabled": true,
+        "globalTextFontColor": "",
+        "globalTextFontFamily": "Roboto",
+        "globalThresholdsConfig": [],
+        "globalTooltipsEnabled": true,
+        "globalTooltipsFontFamily": "Roboto",
+        "globalTooltipsShowTimestampEnabled": true,
+        "globalUnitFormat": "short",
+        "layoutDisplayLimit": 100,
+        "layoutNumColumns": 8,
+        "layoutNumRows": 8,
+        "overrideConfig": {
+          "overrides": [
+            {
+              "alias": "",
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "colors": [
+                "#299c46",
+                "#e5ac0e",
+                "#bf1b00",
+                "#4040a0"
+              ],
+              "decimals": 3,
+              "enabled": true,
+              "label": "OVERRIDE 1",
+              "metricName": ".*速率",
+              "operatorName": "mean",
+              "order": 0,
+              "prefix": "",
+              "scaledDecimals": 0,
+              "suffix": "",
+              "thresholds": [
+                {
+                  "color": "#8a8a8a",
+                  "state": 0,
+                  "value": 0
+                },
+                {
+                  "color": "#299c46",
+                  "state": 0,
+                  "value": 1
+                }
+              ],
+              "unitFormat": "eps"
+            },
+            {
+              "alias": "",
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "colors": [
+                "#299c46",
+                "#e5ac0e",
+                "#bf1b00",
+                "#4040a0"
+              ],
+              "enabled": true,
+              "label": "OVERRIDE 2",
+              "metricName": "(.*)堆积数",
+              "operatorName": "mean",
+              "order": 1,
+              "prefix": "",
+              "scaledDecimals": 0,
+              "suffix": "",
+              "thresholds": [
+                {
+                  "color": "#8a8a8a",
+                  "state": 0,
+                  "value": 0
+                },
+                {
+                  "color": "#bf1b00",
+                  "state": 2,
+                  "value": 1
+                }
+              ],
+              "unitFormat": "short"
+            }
+          ]
+        },
+        "panelId": 0,
+        "radius": 100,
+        "sortByDirection": 1,
+        "sortByField": "thresholdLevel",
+        "tooltipDisplayMode": "all",
+        "tooltipDisplayTextTriggeredEmpty": "",
+        "tooltipPrimarySortByField": "thresholdLevel",
+        "tooltipPrimarySortDirection": 2,
+        "tooltipSecondarySortByField": "value",
+        "tooltipSecondarySortDirection": 2
+      },
+      "pluginVersion": "2.0.9",
+      "repeat": "partition",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(irate(kafka_topic_partition_current_offset{namespace=~\"resource\",topic=\"kafka_topic\",partition=~\"$partition\"}[5m]))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Kafka_生产速率",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(kafka_consumergroup_lag{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"kafka_topic\",partition=~\"$partition\"})",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Kafka_堆积数",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(irate(kafka_consumergroup_current_offset{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"kafka_topic\",partition=~\"$partition\"}[5m]))",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Kafka_消费速率",
+          "refId": "C"
+        }
+      ],
+      "title": "分区：$partition",
+      "type": "grafana-polystat-panel"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 2,
+        "x": 12,
+        "y": 2
+      },
+      "id": 186,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "\r\n<br />\r\n\t<br />\r\n\t<br />\r\n<p> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-----></p>\r\n<br />\r\n\t<br />\r\n\t<br />\r\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "repeat": "partition",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 14,
+        "y": 2
+      },
+      "id": 187,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:160",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:161",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "options": {
+        "autoSizeColumns": true,
+        "autoSizePolygons": true,
+        "autoSizeRows": true,
+        "compositeConfig": {
+          "animationSpeed": "2500",
+          "composites": [
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 1",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Filter_(.*)"
+                }
+              ],
+              "name": "Filter",
+              "order": 0,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            }
+          ],
+          "enabled": true
+        },
+        "ellipseCharacters": 18,
+        "ellipseEnabled": false,
+        "globalAutoScaleFonts": true,
+        "globalClickthrough": "",
+        "globalClickthroughNewTabEnabled": false,
+        "globalClickthroughSanitizedEnabled": false,
+        "globalDecimals": 2,
+        "globalDisplayMode": "all",
+        "globalDisplayTextTriggeredEmpty": "",
+        "globalFillColor": "#37872D",
+        "globalFontSize": 12,
+        "globalGradientsEnabled": false,
+        "globalOperator": "mean",
+        "globalPolygonBorderColor": "black",
+        "globalPolygonBorderSize": 2,
+        "globalPolygonSize": 50,
+        "globalRegexPattern": "",
+        "globalShape": "hexagon_pointed_top",
+        "globalShowTooltipColumnHeadersEnabled": true,
+        "globalShowValueEnabled": true,
+        "globalTextFontAutoColor": "#000000",
+        "globalTextFontAutoColorEnabled": true,
+        "globalTextFontColor": "",
+        "globalTextFontFamily": "Roboto",
+        "globalThresholdsConfig": [],
+        "globalTooltipsEnabled": true,
+        "globalTooltipsFontFamily": "Roboto",
+        "globalTooltipsShowTimestampEnabled": true,
+        "globalUnitFormat": "short",
+        "layoutDisplayLimit": 100,
+        "layoutNumColumns": 8,
+        "layoutNumRows": 8,
+        "overrideConfig": {
+          "overrides": [
+            {
+              "alias": "",
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "colors": [
+                "#299c46",
+                "#e5ac0e",
+                "#bf1b00",
+                "#4040a0"
+              ],
+              "decimals": 3,
+              "enabled": true,
+              "label": "OVERRIDE 1",
+              "metricName": ".*速率",
+              "operatorName": "mean",
+              "order": 0,
+              "prefix": "",
+              "scaledDecimals": 0,
+              "suffix": "",
+              "thresholds": [
+                {
+                  "color": "#8a8a8a",
+                  "state": 0,
+                  "value": 0
+                },
+                {
+                  "color": "#299c46",
+                  "state": 0,
+                  "value": 1
+                }
+              ],
+              "unitFormat": "eps"
+            }
+          ]
+        },
+        "panelId": 0,
+        "radius": 100,
+        "sortByDirection": 1,
+        "sortByField": "name",
+        "tooltipDisplayMode": "all",
+        "tooltipDisplayTextTriggeredEmpty": "",
+        "tooltipPrimarySortByField": "thresholdLevel",
+        "tooltipPrimarySortDirection": 2,
+        "tooltipSecondarySortByField": "value",
+        "tooltipSecondarySortDirection": 2
+      },
+      "pluginVersion": "2.0.9",
+      "repeat": "filter_pod",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(logstash_events_in{namespace=~\"$namespace\",pod=~\"$filter_pod\"}[5m]))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Filter_输入速率",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(logstash_events_filted{namespace=~\"$namespace\",pod=~\"$filter_pod\"}[5m]))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Filter_处理速率",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(logstash_events_out{namespace=~\"$namespace\",pod=~\"$filter_pod\"}[5m]))",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Filter_输出速率",
+          "refId": "C"
+        }
+      ],
+      "title": "$filter_pod",
+      "type": "grafana-polystat-panel"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 18,
+        "y": 2
+      },
+      "id": 198,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "\r\n<br />\r\n\t<br />\r\n\t<br />\r\n<p> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-----></p>\r\n<br />\r\n\t<br />\r\n\t<br />\r\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "repeat": "filter_pod",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 2
+      },
+      "id": 189,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:92",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:93",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "options": {
+        "autoSizeColumns": true,
+        "autoSizePolygons": true,
+        "autoSizeRows": true,
+        "compositeConfig": {
+          "animationSpeed": "2500",
+          "composites": [
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 1",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "Elasticsearch_(.*)"
+                }
+              ],
+              "name": "OpenSearch",
+              "order": 0,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            }
+          ],
+          "enabled": true
+        },
+        "ellipseCharacters": 18,
+        "ellipseEnabled": false,
+        "globalAutoScaleFonts": true,
+        "globalClickthrough": "",
+        "globalClickthroughNewTabEnabled": false,
+        "globalClickthroughSanitizedEnabled": false,
+        "globalDecimals": 2,
+        "globalDisplayMode": "all",
+        "globalDisplayTextTriggeredEmpty": "",
+        "globalFillColor": "#37872D",
+        "globalFontSize": 12,
+        "globalGradientsEnabled": false,
+        "globalOperator": "mean",
+        "globalPolygonBorderColor": "black",
+        "globalPolygonBorderSize": 2,
+        "globalPolygonSize": 50,
+        "globalRegexPattern": "",
+        "globalShape": "hexagon_pointed_top",
+        "globalShowTooltipColumnHeadersEnabled": true,
+        "globalShowValueEnabled": true,
+        "globalTextFontAutoColor": "#000000",
+        "globalTextFontAutoColorEnabled": true,
+        "globalTextFontColor": "",
+        "globalTextFontFamily": "Roboto",
+        "globalThresholdsConfig": [],
+        "globalTooltipsEnabled": true,
+        "globalTooltipsFontFamily": "Roboto",
+        "globalTooltipsShowTimestampEnabled": true,
+        "globalUnitFormat": "short",
+        "layoutDisplayLimit": 100,
+        "layoutNumColumns": 8,
+        "layoutNumRows": 8,
+        "overrideConfig": {
+          "overrides": [
+            {
+              "alias": "",
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "colors": [
+                "#299c46",
+                "#e5ac0e",
+                "#bf1b00",
+                "#4040a0"
+              ],
+              "decimals": 3,
+              "enabled": true,
+              "label": "OVERRIDE 1",
+              "metricName": ".*速率",
+              "operatorName": "mean",
+              "order": 0,
+              "prefix": "",
+              "scaledDecimals": 0,
+              "suffix": "",
+              "thresholds": [
+                {
+                  "color": "#8a8a8a",
+                  "state": 0,
+                  "value": 0
+                },
+                {
+                  "color": "#299c46",
+                  "state": 0,
+                  "value": 1
+                }
+              ],
+              "unitFormat": "eps"
+            }
+          ]
+        },
+        "panelId": 0,
+        "radius": 100,
+        "sortByDirection": 1,
+        "sortByField": "name",
+        "tooltipDisplayMode": "all",
+        "tooltipDisplayTextTriggeredEmpty": "",
+        "tooltipPrimarySortByField": "thresholdLevel",
+        "tooltipPrimarySortDirection": 2,
+        "tooltipSecondarySortByField": "value",
+        "tooltipSecondarySortDirection": 2
+      },
+      "pluginVersion": "2.0.9",
+      "repeat": "es_node",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(irate(opensearch_indices_indexing_index_total{namespace=~\"resource\", name=~\"$opensearch_pod\"}[5m]))by(name)",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Elasticsearch_索引速率",
+          "refId": "A"
+        }
+      ],
+      "title": "$opensearch_pod",
+      "type": "grafana-polystat-panel"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 253,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 4,
+            "x": 0,
+            "y": 18
+          },
+          "id": 284,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "title": "日志接收器",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 2,
+            "x": 4,
+            "y": 18
+          },
+          "id": 285,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 6,
+            "x": 6,
+            "y": 18
+          },
+          "id": 288,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum(irate(kafka_topic_partition_current_offset{namespace=~\"resource\",topic=\"kafka_topic\"}[5m]))",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Kafka_生产速率",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum(kafka_consumergroup_lag{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"kafka_topic\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Kafka_堆积数",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum(irate(kafka_consumergroup_current_offset{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"kafka_topic\"}[5m]))",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Kafka_消费速率",
+              "refId": "C"
+            }
+          ],
+          "title": "日志队列",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 2,
+            "x": 12,
+            "y": 18
+          },
+          "id": 290,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 4,
+            "x": 14,
+            "y": 18
+          },
+          "id": 292,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "title": "日志归档器",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 2,
+            "x": 18,
+            "y": 18
+          },
+          "id": 294,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 4,
+            "x": 20,
+            "y": 18
+          },
+          "id": 235,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "title": "日志存储",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ]
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 0,
+            "y": 19
+          },
+          "id": 286,
+          "mappingTypes": [
+            {
+              "$$hashKey": "object:698",
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "$$hashKey": "object:699",
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "options": {
+            "autoSizeColumns": true,
+            "autoSizePolygons": true,
+            "autoSizeRows": true,
+            "compositeConfig": {
+              "animationSpeed": "2500",
+              "composites": [
+                {
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "displayMode": "all",
+                  "enabled": true,
+                  "isTemplated": false,
+                  "label": "COMPOSITE 1",
+                  "metrics": [
+                    {
+                      "order": 0,
+                      "seriesMatch": "Input_(.*)"
+                    }
+                  ],
+                  "name": "Input",
+                  "order": 0,
+                  "showComposite": true,
+                  "showMembers": false,
+                  "showName": true,
+                  "showValue": true,
+                  "templatedName": ""
+                },
+                {
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "displayMode": "all",
+                  "enabled": true,
+                  "isTemplated": false,
+                  "label": "COMPOSITE 2",
+                  "metrics": [
+                    {
+                      "order": 0,
+                      "seriesMatch": "Kafka_(.*)"
+                    }
+                  ],
+                  "name": "Kafka",
+                  "order": 1,
+                  "showComposite": true,
+                  "showMembers": false,
+                  "showName": true,
+                  "showValue": true,
+                  "templatedName": ""
+                },
+                {
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "displayMode": "all",
+                  "enabled": true,
+                  "isTemplated": false,
+                  "label": "COMPOSITE 3",
+                  "metrics": [
+                    {
+                      "order": 0,
+                      "seriesMatch": "Dir-monitor_(.*)"
+                    }
+                  ],
+                  "name": "Dir-monitor",
+                  "order": 2,
+                  "showComposite": true,
+                  "showMembers": false,
+                  "showName": true,
+                  "showValue": true,
+                  "templatedName": ""
+                }
+              ],
+              "enabled": true
+            },
+            "ellipseCharacters": 18,
+            "ellipseEnabled": false,
+            "globalAutoScaleFonts": true,
+            "globalClickthrough": "",
+            "globalClickthroughNewTabEnabled": false,
+            "globalClickthroughSanitizedEnabled": false,
+            "globalDecimals": 10,
+            "globalDisplayMode": "all",
+            "globalDisplayTextTriggeredEmpty": "",
+            "globalFillColor": "#37872D",
+            "globalFontSize": 12,
+            "globalGradientsEnabled": false,
+            "globalOperator": "last",
+            "globalPolygonBorderColor": "black",
+            "globalPolygonBorderSize": 2,
+            "globalPolygonSize": 50,
+            "globalRegexPattern": "",
+            "globalShape": "hexagon_pointed_top",
+            "globalShowTooltipColumnHeadersEnabled": true,
+            "globalShowValueEnabled": true,
+            "globalTextFontAutoColor": "#000000",
+            "globalTextFontAutoColorEnabled": true,
+            "globalTextFontColor": "",
+            "globalTextFontFamily": "Roboto",
+            "globalThresholdsConfig": [],
+            "globalTooltipsEnabled": true,
+            "globalTooltipsFontFamily": "Roboto",
+            "globalTooltipsShowTimestampEnabled": true,
+            "globalUnitFormat": "short",
+            "layoutDisplayLimit": 100,
+            "layoutNumColumns": 8,
+            "layoutNumRows": 8,
+            "overrideConfig": {
+              "overrides": [
+                {
+                  "alias": "",
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "colors": [
+                    "#299c46",
+                    "#e5ac0e",
+                    "#bf1b00",
+                    "#4040a0"
+                  ],
+                  "decimals": 3,
+                  "enabled": true,
+                  "label": "OVERRIDE 1",
+                  "metricName": ".*速率",
+                  "operatorName": "last",
+                  "order": 0,
+                  "prefix": "",
+                  "scaledDecimals": 0,
+                  "suffix": "",
+                  "thresholds": [
+                    {
+                      "color": "#8a8a8a",
+                      "state": 0,
+                      "value": 0
+                    },
+                    {
+                      "color": "#299c46",
+                      "state": 0,
+                      "value": 1
+                    }
+                  ],
+                  "unitFormat": "eps"
+                }
+              ]
+            },
+            "panelId": 0,
+            "radius": 100,
+            "sortByDirection": 1,
+            "sortByField": "name",
+            "tooltipDisplayMode": "all",
+            "tooltipDisplayTextTriggeredEmpty": "",
+            "tooltipPrimarySortByField": "thresholdLevel",
+            "tooltipPrimarySortDirection": 2,
+            "tooltipSecondarySortByField": "value",
+            "tooltipSecondarySortDirection": 2
+          },
+          "pluginVersion": "2.0.9",
+          "repeat": "input_pod",
+          "repeatDirection": "v",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "sum(irate(logstash_events_in{namespace=~\"$namespace\",pod=\"$input_pod\"}[5m]))",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Input_输入速率",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "sum(irate(logstash_events_filtered{namespace=~\"$namespace\",pod=\"$input_pod\"}[5m]))",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Input_处理速率",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "sum(irate(logstash_events_out{namespace=~\"$namespace\",pod=\"$input_pod\"}[5m]))",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Input_输出速率",
+              "refId": "C"
+            }
+          ],
+          "title": "$input_pod",
+          "type": "grafana-polystat-panel"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 4,
+            "y": 19
+          },
+          "id": 287,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "\r\n<br />\r\n\t<br />\r\n\t<br />\r\n<p> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-----></p>\r\n<br />\r\n\t<br />\r\n\t<br />\r\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "repeat": "input_pod",
+          "repeatDirection": "v",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ]
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 6,
+            "y": 19
+          },
+          "id": 289,
+          "mappingTypes": [
+            {
+              "$$hashKey": "object:286",
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "$$hashKey": "object:287",
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "options": {
+            "autoSizeColumns": true,
+            "autoSizePolygons": true,
+            "autoSizeRows": true,
+            "compositeConfig": {
+              "animationSpeed": "2500",
+              "composites": [
+                {
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "displayMode": "all",
+                  "enabled": true,
+                  "isTemplated": false,
+                  "label": "COMPOSITE 1",
+                  "metrics": [
+                    {
+                      "order": 0,
+                      "seriesMatch": "Kafka_(生产速率)"
+                    }
+                  ],
+                  "name": "Kafka",
+                  "order": 0,
+                  "showComposite": true,
+                  "showMembers": false,
+                  "showName": true,
+                  "showValue": true,
+                  "templatedName": ""
+                },
+                {
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "displayMode": "all",
+                  "enabled": true,
+                  "isTemplated": false,
+                  "label": "COMPOSITE 2",
+                  "metrics": [
+                    {
+                      "order": 0,
+                      "seriesMatch": "Kafka_(堆积数)"
+                    }
+                  ],
+                  "name": "Kafka",
+                  "order": 1,
+                  "showComposite": true,
+                  "showMembers": false,
+                  "showName": true,
+                  "showValue": true,
+                  "templatedName": ""
+                },
+                {
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "displayMode": "all",
+                  "enabled": true,
+                  "isTemplated": false,
+                  "label": "COMPOSITE 3",
+                  "metrics": [
+                    {
+                      "order": 0,
+                      "seriesMatch": "Kafka_(消费速率)"
+                    }
+                  ],
+                  "name": "Kafka",
+                  "order": 2,
+                  "showComposite": true,
+                  "showMembers": false,
+                  "showName": true,
+                  "showValue": true,
+                  "templatedName": ""
+                }
+              ],
+              "enabled": true
+            },
+            "ellipseCharacters": 18,
+            "ellipseEnabled": false,
+            "globalAutoScaleFonts": true,
+            "globalClickthrough": "",
+            "globalClickthroughNewTabEnabled": false,
+            "globalClickthroughSanitizedEnabled": false,
+            "globalDecimals": 2,
+            "globalDisplayMode": "all",
+            "globalDisplayTextTriggeredEmpty": "",
+            "globalFillColor": "#37872D",
+            "globalFontSize": 12,
+            "globalGradientsEnabled": false,
+            "globalOperator": "last",
+            "globalPolygonBorderColor": "black",
+            "globalPolygonBorderSize": 2,
+            "globalPolygonSize": 50,
+            "globalRegexPattern": "",
+            "globalShape": "hexagon_pointed_top",
+            "globalShowTooltipColumnHeadersEnabled": true,
+            "globalShowValueEnabled": true,
+            "globalTextFontAutoColor": "#000000",
+            "globalTextFontAutoColorEnabled": true,
+            "globalTextFontColor": "",
+            "globalTextFontFamily": "Roboto",
+            "globalThresholdsConfig": [],
+            "globalTooltipsEnabled": true,
+            "globalTooltipsFontFamily": "Roboto",
+            "globalTooltipsShowTimestampEnabled": true,
+            "globalUnitFormat": "short",
+            "layoutDisplayLimit": 100,
+            "layoutNumColumns": 8,
+            "layoutNumRows": 8,
+            "overrideConfig": {
+              "overrides": [
+                {
+                  "alias": "",
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "colors": [
+                    "#299c46",
+                    "#e5ac0e",
+                    "#bf1b00",
+                    "#4040a0"
+                  ],
+                  "decimals": 3,
+                  "enabled": true,
+                  "label": "OVERRIDE 1",
+                  "metricName": ".*速率",
+                  "operatorName": "mean",
+                  "order": 0,
+                  "prefix": "",
+                  "scaledDecimals": 0,
+                  "suffix": "",
+                  "thresholds": [
+                    {
+                      "color": "#8a8a8a",
+                      "state": 0,
+                      "value": 0
+                    },
+                    {
+                      "color": "#299c46",
+                      "state": 0,
+                      "value": 1
+                    }
+                  ],
+                  "unitFormat": "eps"
+                },
+                {
+                  "alias": "",
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "colors": [
+                    "#299c46",
+                    "#e5ac0e",
+                    "#bf1b00",
+                    "#4040a0"
+                  ],
+                  "enabled": true,
+                  "label": "OVERRIDE 2",
+                  "metricName": "(.*)堆积数",
+                  "operatorName": "mean",
+                  "order": 1,
+                  "prefix": "",
+                  "scaledDecimals": 0,
+                  "suffix": "",
+                  "thresholds": [
+                    {
+                      "color": "#8a8a8a",
+                      "state": 0,
+                      "value": 0
+                    },
+                    {
+                      "color": "#bf1b00",
+                      "state": 2,
+                      "value": 1
+                    }
+                  ],
+                  "unitFormat": "short"
+                }
+              ]
+            },
+            "panelId": 0,
+            "radius": 100,
+            "sortByDirection": 1,
+            "sortByField": "thresholdLevel",
+            "tooltipDisplayMode": "all",
+            "tooltipDisplayTextTriggeredEmpty": "",
+            "tooltipPrimarySortByField": "thresholdLevel",
+            "tooltipPrimarySortDirection": 2,
+            "tooltipSecondarySortByField": "value",
+            "tooltipSecondarySortDirection": 2
+          },
+          "pluginVersion": "2.0.9",
+          "repeat": "partition",
+          "repeatDirection": "v",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum(irate(kafka_topic_partition_current_offset{namespace=~\"resource\",topic=\"kafka_topic\",partition=~\"$partition\"}[5m]))",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Kafka_生产速率",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum(kafka_consumergroup_lag{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"archive\",partition=~\"$partition\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Kafka_堆积数",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum(irate(kafka_consumergroup_current_offset{namespace=~\"resource\",topic=\"kafka_topic\",consumergroup=\"archive\",partition=~\"$partition\"}[5m]))",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Kafka_消费速率",
+              "refId": "C"
+            }
+          ],
+          "title": "分区：$partition",
+          "type": "grafana-polystat-panel"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 2,
+            "x": 12,
+            "y": 19
+          },
+          "id": 291,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "\r\n<br />\r\n\t<br />\r\n\t<br />\r\n<p> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-----></p>\r\n<br />\r\n\t<br />\r\n\t<br />\r\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "repeat": "partition",
+          "repeatDirection": "v",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ]
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 14,
+            "y": 19
+          },
+          "id": 335,
+          "mappingTypes": [
+            {
+              "$$hashKey": "object:157",
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "$$hashKey": "object:158",
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "options": {
+            "autoSizeColumns": true,
+            "autoSizePolygons": true,
+            "autoSizeRows": true,
+            "compositeConfig": {
+              "animationSpeed": "2500",
+              "composites": [
+                {
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "displayMode": "all",
+                  "enabled": true,
+                  "isTemplated": false,
+                  "label": "COMPOSITE 1",
+                  "metrics": [
+                    {
+                      "order": 0,
+                      "seriesMatch": "Dir-monitor_(.*)"
+                    }
+                  ],
+                  "name": "Dir-monitor",
+                  "order": 0,
+                  "showComposite": true,
+                  "showMembers": false,
+                  "showName": true,
+                  "showValue": true,
+                  "templatedName": ""
+                }
+              ],
+              "enabled": true
+            },
+            "ellipseCharacters": 18,
+            "ellipseEnabled": false,
+            "globalAutoScaleFonts": true,
+            "globalClickthrough": "",
+            "globalClickthroughNewTabEnabled": false,
+            "globalClickthroughSanitizedEnabled": false,
+            "globalDecimals": 2,
+            "globalDisplayMode": "all",
+            "globalDisplayTextTriggeredEmpty": "",
+            "globalFillColor": "#37872D",
+            "globalFontSize": 12,
+            "globalGradientsEnabled": false,
+            "globalOperator": "mean",
+            "globalPolygonBorderColor": "black",
+            "globalPolygonBorderSize": 2,
+            "globalPolygonSize": 50,
+            "globalRegexPattern": "",
+            "globalShape": "hexagon_pointed_top",
+            "globalShowTooltipColumnHeadersEnabled": true,
+            "globalShowValueEnabled": true,
+            "globalTextFontAutoColor": "#000000",
+            "globalTextFontAutoColorEnabled": true,
+            "globalTextFontColor": "",
+            "globalTextFontFamily": "Roboto",
+            "globalThresholdsConfig": [],
+            "globalTooltipsEnabled": true,
+            "globalTooltipsFontFamily": "Roboto",
+            "globalTooltipsShowTimestampEnabled": true,
+            "globalUnitFormat": "short",
+            "layoutDisplayLimit": 100,
+            "layoutNumColumns": 8,
+            "layoutNumRows": 8,
+            "overrideConfig": {
+              "overrides": [
+                {
+                  "alias": "",
+                  "clickThrough": "",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "colors": [
+                    "#299c46",
+                    "#e5ac0e",
+                    "#bf1b00",
+                    "#4040a0"
+                  ],
+                  "decimals": 3,
+                  "enabled": true,
+                  "label": "OVERRIDE 1",
+                  "metricName": ".*速率",
+                  "operatorName": "mean",
+                  "order": 0,
+                  "prefix": "",
+                  "scaledDecimals": 0,
+                  "suffix": "",
+                  "thresholds": [
+                    {
+                      "color": "#8a8a8a",
+                      "state": 0,
+                      "value": 0
+                    },
+                    {
+                      "color": "#299c46",
+                      "state": 0,
+                      "value": 1
+                    }
+                  ],
+                  "unitFormat": "eps"
+                }
+              ]
+            },
+            "panelId": 0,
+            "radius": 100,
+            "sortByDirection": 1,
+            "sortByField": "name",
+            "tooltipDisplayMode": "all",
+            "tooltipDisplayTextTriggeredEmpty": "",
+            "tooltipPrimarySortByField": "thresholdLevel",
+            "tooltipPrimarySortDirection": 2,
+            "tooltipSecondarySortByField": "value",
+            "tooltipSecondarySortDirection": 2
+          },
+          "pluginVersion": "2.0.9",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "sum(irate(logstash_events_in{namespace=~\"$namespace\",pod=\"$dir_monitor_pod\"}[5m]))",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Dir-monitor_输入速率",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "sum(irate(logstash_events_filtered{namespace=~\"$namespace\",pod=\"$dir_monitor_pod\"}[5m]))",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Dir-monitor_处理速率",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "sum(irate(logstash_events_out{namespace=~\"$namespace\",pod=\"$dir_monitor_pod\"}[5m]))",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Dir-monitor_输出速率",
+              "refId": "C"
+            }
+          ],
+          "title": "日志归档器",
+          "type": "grafana-polystat-panel"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 2,
+            "x": 18,
+            "y": 19
+          },
+          "id": 295,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "\r\n<br />\r\n\t<br />\r\n\t<br />\r\n<p> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp-----></p>\r\n<br />\r\n\t<br />\r\n\t<br />\r\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "repeatDirection": "v",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 20,
+            "y": 19
+          },
+          "id": 362,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "\r\n<br />\r\n\t<br />\r\n\t<br />\r\n<p> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<<<存储服务器>>>></p>\r\n<br />\r\n\t<br />\r\n\t<br />\r\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "repeatDirection": "v",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "refId": "A"
+            }
+          ],
+          "transparent": true,
+          "type": "text"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "归档数据流监控",
+      "type": "row"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [
+    "product",
+    "business",
+    "anyrobot",
+    "app",
+    "monitor",
+    "detail"
+  ],
+  "templating": {
+    "list": [
+      {
+        "hide": 2,
+        "label": "命名空间",
+        "name": "namespace",
+        "query": "anyrobot",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(logstash_events_in{namespace=~\"$namespace\",anyrobot_module=\"logstash-input\"}, pod)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": true,
+        "name": "input_pod",
+        "options": [],
+        "query": {
+          "query": "label_values(logstash_events_in{namespace=~\"$namespace\",anyrobot_module=\"logstash-input\"}, pod)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(logstash_events_in{namespace=~\"$namespace\",anyrobot_module=\"logstash-filter\"}, pod)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": true,
+        "name": "filter_pod",
+        "options": [],
+        "query": {
+          "query": "label_values(logstash_events_in{namespace=~\"$namespace\",anyrobot_module=\"logstash-filter\"}, pod)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(opensearch_indices_indexing_index_total {namespace=~\"resource\"}, name)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": true,
+        "name": "opensearch_pod",
+        "options": [],
+        "query": {
+          "query": "label_values(opensearch_indices_indexing_index_total {namespace=~\"resource\"}, name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(kafka_topic_partition_replicas{namespace=~\"resource\",topic=\"kafka_topic\"}, partition)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": true,
+        "name": "partition",
+        "options": [],
+        "query": {
+          "query": "label_values(kafka_topic_partition_replicas{namespace=~\"resource\",topic=\"kafka_topic\"}, partition)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(logstash_events_in{namespace=~\"$namespace\",anyrobot_module=\"dir-monitor\"}, pod)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": true,
+        "name": "dir_monitor_pod",
+        "options": [],
+        "query": {
+          "query": "label_values(logstash_events_in{namespace=~\"$namespace\",anyrobot_module=\"dir-monitor\"}, pod)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "E-08_日志数据流监控",
+  "uid": "E-08",
+  "version": 1,
+  "weekStart": ""
+}

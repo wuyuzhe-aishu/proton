@@ -227,6 +227,72 @@ export interface ZooKeeperManagedValue extends ManagedServiceValue {
   }
 }
 
+export interface PrometheusLocalValue {
+  hosts: string[]
+  data_path: string
+  storage_capacity: string
+  resources?: {
+    limits?: {
+      cpu: string
+      memory: string
+    }
+    requests?: {
+      cpu: string
+      memory: string
+    }
+  }
+  storageClassName: string
+}
+
+export interface PrometheusManagedValue {
+  replica_count: number
+  storage_capacity: string
+  storageClassName: string
+  resources?: {
+    limits?: {
+      cpu: string
+      memory: string
+    }
+    requests?: {
+      cpu: string
+      memory: string
+    }
+  }
+}
+
+export interface GrafanaLocalValue {
+  hosts: string[]
+  data_path: string
+  storage_capacity: string
+  resources?: {
+    limits?: {
+      cpu: string
+      memory: string
+    }
+    requests?: {
+      cpu: string
+      memory: string
+    }
+  }
+  storageClassName: string
+}
+
+export interface GrafanaManagedValue {
+  replica_count: number
+  storage_capacity: string
+  storageClassName: string
+  resources?: {
+    limits?: {
+      cpu: string
+      memory: string
+    }
+    requests?: {
+      cpu: string
+      memory: string
+    }
+  }
+}
+
 export interface RdsConnectInfoFormValue {
   source_type: SourceType | ''
   rds_type: string
@@ -320,6 +386,14 @@ export interface WizardState {
       local: ZooKeeperLocalValue
       managed: ZooKeeperManagedValue
     }
+    prometheus: {
+      local: PrometheusLocalValue
+      managed: PrometheusManagedValue
+    }
+    grafana: {
+      local: GrafanaLocalValue
+      managed: GrafanaManagedValue
+    }
   }
   resource_connect_info: {
     rds: RdsConnectInfoFormValue
@@ -352,6 +426,8 @@ export interface SubmitConfig {
   opensearch?: unknown
   kafka?: unknown
   zookeeper?: unknown
+  prometheus?: unknown
+  grafana?: unknown
   resource_connect_info: Record<string, unknown>
 }
 

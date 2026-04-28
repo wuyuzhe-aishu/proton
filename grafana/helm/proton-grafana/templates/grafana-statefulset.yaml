@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "grafana.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "grafana.name" . }}
+spec:
+  serviceName: {{ template "grafana.name" . }}
+  podManagementPolicy: Parallel
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "grafana.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "grafana.name" . }}
+    spec:
+{{- with .Values.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+{{- end }}
+      dnsConfig:
+        options:
+          - name: single-request-reopen
+          - name: use-vc
+      securityContext:
+        fsGroup: 0
+        runAsUser: 472
+      containers:
+        - name: grafana-server
+          image: {{ template "grafana.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          #cmd: [ "/entrypoint.sh" ]
+          ports:
+            - name: grafana
+              containerPort: 3000
+          env:
+            - name: TZ
+              value: "{{ .Values.env.timezone }}"
+            {{- range $key, $value := .Values.config.grafanaENV }}
+            - name: "{{ $key }}"
+              value: "{{ $value }}"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: grafana-datasource-cm
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: grafana-monitor-cm
+              mountPath: /etc/grafana/provisioning-monitor
+            - name: data
+              mountPath: /var/lib/grafana
+      volumes:
+        - name: grafana-datasource-cm
+          configMap:
+            name: {{ template "grafana.name" . }}-datasource-cm
+        - name: grafana-monitor-cm
+          configMap:
+            name: {{ template "grafana.name" . }}-monitor-cm
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName }}
+        {{ else }}
+        storageClassName: ""
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.capacity }}

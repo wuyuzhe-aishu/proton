@@ -3,6 +3,10 @@ import type {
   KafkaManagedValue,
   OpenSearchLocalValue,
   OpenSearchManagedValue,
+  PrometheusLocalValue,
+  PrometheusManagedValue,
+  GrafanaLocalValue,
+  GrafanaManagedValue,
   SubmitConfig,
   WizardState,
 } from './config'
@@ -67,6 +71,44 @@ function cleanKafkaLocalConfig(value: KafkaLocalValue) {
     data_path: value.data_path,
     ...(value.storage_capacity ? { storage_capacity: value.storage_capacity } : {}),
     ...cleanKafkaCommon(value),
+  }
+}
+
+function cleanPrometheusLocalConfig(value: PrometheusLocalValue) {
+  return {
+    hosts: value.hosts,
+    data_path: value.data_path,
+    ...(value.storage_capacity ? { storage_capacity: value.storage_capacity } : {}),
+    ...(value.storageClassName ? { storageClassName: value.storageClassName } : {}),
+    ...(value.resources ? { resources: value.resources } : {}),
+  }
+}
+
+function cleanPrometheusManagedConfig(value: PrometheusManagedValue) {
+  return {
+    replica_count: value.replica_count,
+    ...(value.storage_capacity ? { storage_capacity: value.storage_capacity } : {}),
+    ...(value.storageClassName ? { storageClassName: value.storageClassName } : {}),
+    ...(value.resources ? { resources: value.resources } : {}),
+  }
+}
+
+function cleanGrafanaLocalConfig(value: GrafanaLocalValue) {
+  return {
+    hosts: value.hosts,
+    data_path: value.data_path,
+    ...(value.storage_capacity ? { storage_capacity: value.storage_capacity } : {}),
+    ...(value.storageClassName ? { storageClassName: value.storageClassName } : {}),
+    ...(value.resources ? { resources: value.resources } : {}),
+  }
+}
+
+function cleanGrafanaManagedConfig(value: GrafanaManagedValue) {
+  return {
+    replica_count: value.replica_count,
+    ...(value.storage_capacity ? { storage_capacity: value.storage_capacity } : {}),
+    ...(value.storageClassName ? { storageClassName: value.storageClassName } : {}),
+    ...(value.resources ? { resources: value.resources } : {}),
   }
 }
 
@@ -218,6 +260,18 @@ export function toSubmitConfig(state: WizardState): SubmitConfig {
       ...state.services.zookeeper.managed,
       enabled: true,
     }
+  }
+
+  if (isLocal) {
+    config.prometheus = cleanPrometheusLocalConfig(state.services.prometheus.local)
+  } else {
+    config.prometheus = cleanPrometheusManagedConfig(state.services.prometheus.managed)
+  }
+
+  if (isLocal) {
+    config.grafana = cleanGrafanaLocalConfig(state.services.grafana.local)
+  } else {
+    config.grafana = cleanGrafanaManagedConfig(state.services.grafana.managed)
   }
 
   return config

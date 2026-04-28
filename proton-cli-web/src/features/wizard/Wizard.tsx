@@ -30,6 +30,8 @@ const managedSteps: Array<{ key: ManagedStep; title: string; description: string
 
 const csAddons = [
   { key: 'ingress-nginx', label: 'ingress-nginx' },
+  { key: 'node-exporter', label: 'node-exporter' },
+  { key: 'kube-state-metrics', label: 'kube-state-metrics' },
 ]
 
 function createNode(index: number) {
@@ -118,6 +120,20 @@ function syncNodeReferences(current: WizardState, previousName: string, nextName
           hosts: replaceNodeReference(current.services.zookeeper.local.hosts, previousName, nextName),
         },
       },
+      prometheus: {
+        ...current.services.prometheus,
+        local: {
+          ...current.services.prometheus.local,
+          hosts: replaceNodeReference(current.services.prometheus.local.hosts, previousName, nextName),
+        },
+      },
+      grafana: {
+        ...current.services.grafana,
+        local: {
+          ...current.services.grafana.local,
+          hosts: replaceNodeReference(current.services.grafana.local.hosts, previousName, nextName),
+        },
+      },
     },
   }
 }
@@ -183,6 +199,20 @@ function detachNodeReferences(current: WizardState, removedName: string, fallbac
         local: {
           ...current.services.zookeeper.local,
           hosts: removeNodeReference(current.services.zookeeper.local.hosts, removedName, fallbackName),
+        },
+      },
+      prometheus: {
+        ...current.services.prometheus,
+        local: {
+          ...current.services.prometheus.local,
+          hosts: removeNodeReference(current.services.prometheus.local.hosts, removedName, fallbackName),
+        },
+      },
+      grafana: {
+        ...current.services.grafana,
+        local: {
+          ...current.services.grafana.local,
+          hosts: removeNodeReference(current.services.grafana.local.hosts, removedName, fallbackName),
         },
       },
     },
@@ -2658,6 +2688,456 @@ function ServiceStep({
         ) : (
           renderExternalHint('MQ')
         )}
+      </div>
+
+      <div className="legacy-service-block">
+        <h4>Prometheus</h4>
+        <div className="legacy-form-grid">
+          {isLocal ? (
+            <label>
+              <span>部署节点</span>
+              <span className="legacy-checkbox-panel">
+                {state.nodes.map((node) => {
+                  const checked = state.services.prometheus.local.hosts.includes(node.name)
+
+                  return (
+                    <label key={node.name} className="legacy-checkbox-panel__item">
+                      <input
+                        type="checkbox"
+                        aria-label={node.name}
+                        checked={checked}
+                        onChange={(event) =>
+                          updateState(setState, (current) => {
+                            const nextHosts = event.target.checked
+                              ? [...current.services.prometheus.local.hosts, node.name]
+                              : current.services.prometheus.local.hosts.filter((item) => item !== node.name)
+
+                            return {
+                              ...current,
+                              services: {
+                                ...current.services,
+                                prometheus: {
+                                  ...current.services.prometheus,
+                                  local: {
+                                    ...current.services.prometheus.local,
+                                    hosts: Array.from(new Set(nextHosts)),
+                                  },
+                                },
+                              },
+                            }
+                          })
+                        }
+                      />
+                      {node.name}
+                    </label>
+                  )
+                })}
+              </span>
+            </label>
+          ) : (
+            <label>
+              <span>副本数</span>
+              <input
+                type="number"
+                min={1}
+                value={state.services.prometheus.managed.replica_count}
+                onChange={(event) =>
+                  updateState(setState, (current) => ({
+                    ...current,
+                    services: {
+                      ...current.services,
+                      prometheus: {
+                        ...current.services.prometheus,
+                        managed: {
+                          ...current.services.prometheus.managed,
+                          replica_count: Number(event.target.value),
+                        },
+                      },
+                    },
+                  }))
+                }
+              />
+            </label>
+          )}
+          <label>
+            <span>Requests.CPU</span>
+            <input
+              value={state.services.prometheus[serviceMode].resources?.requests?.cpu ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    prometheus: {
+                      ...current.services.prometheus,
+                      [serviceMode]: {
+                        ...current.services.prometheus[serviceMode],
+                        resources: {
+                          ...current.services.prometheus[serviceMode].resources,
+                          requests: {
+                            ...current.services.prometheus[serviceMode].resources?.requests,
+                            cpu: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          <label>
+            <span>Requests.Memory</span>
+            <input
+              value={state.services.prometheus[serviceMode].resources?.requests?.memory ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    prometheus: {
+                      ...current.services.prometheus,
+                      [serviceMode]: {
+                        ...current.services.prometheus[serviceMode],
+                        resources: {
+                          ...current.services.prometheus[serviceMode].resources,
+                          requests: {
+                            ...current.services.prometheus[serviceMode].resources?.requests,
+                            memory: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          <label>
+            <span>Limits.CPU</span>
+            <input
+              value={state.services.prometheus[serviceMode].resources?.limits?.cpu ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    prometheus: {
+                      ...current.services.prometheus,
+                      [serviceMode]: {
+                        ...current.services.prometheus[serviceMode],
+                        resources: {
+                          ...current.services.prometheus[serviceMode].resources,
+                          limits: {
+                            ...current.services.prometheus[serviceMode].resources?.limits,
+                            cpu: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          <label>
+            <span>Limits.Memory</span>
+            <input
+              value={state.services.prometheus[serviceMode].resources?.limits?.memory ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    prometheus: {
+                      ...current.services.prometheus,
+                      [serviceMode]: {
+                        ...current.services.prometheus[serviceMode],
+                        resources: {
+                          ...current.services.prometheus[serviceMode].resources,
+                          limits: {
+                            ...current.services.prometheus[serviceMode].resources?.limits,
+                            memory: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          {isLocal ? (
+            <label>
+              <span>数据路径</span>
+              <input
+                value={state.services.prometheus.local.data_path}
+                onChange={(event) =>
+                  updateState(setState, (current) => ({
+                    ...current,
+                    services: {
+                      ...current.services,
+                      prometheus: {
+                        ...current.services.prometheus,
+                        local: {
+                          ...current.services.prometheus.local,
+                          data_path: event.target.value,
+                        },
+                      },
+                    },
+                  }))
+                }
+              />
+            </label>
+          ) : (
+            <label>
+              <span>storageClassName</span>
+              <input
+                value={state.services.prometheus.managed.storageClassName}
+                onChange={(event) =>
+                  updateState(setState, (current) => ({
+                    ...current,
+                    services: {
+                      ...current.services,
+                      prometheus: {
+                        ...current.services.prometheus,
+                        managed: {
+                          ...current.services.prometheus.managed,
+                          storageClassName: event.target.value,
+                        },
+                      },
+                    },
+                  }))
+                }
+              />
+            </label>
+          )}
+        </div>
+      </div>
+
+      <div className="legacy-service-block">
+        <h4>Grafana</h4>
+        <div className="legacy-form-grid">
+          {isLocal ? (
+            <label>
+              <span>部署节点</span>
+              <span className="legacy-checkbox-panel">
+                {state.nodes.map((node) => {
+                  const checked = state.services.grafana.local.hosts.includes(node.name)
+
+                  return (
+                    <label key={node.name} className="legacy-checkbox-panel__item">
+                      <input
+                        type="checkbox"
+                        aria-label={node.name}
+                        checked={checked}
+                        onChange={(event) =>
+                          updateState(setState, (current) => {
+                            const nextHosts = event.target.checked
+                              ? [...current.services.grafana.local.hosts, node.name]
+                              : current.services.grafana.local.hosts.filter((item) => item !== node.name)
+
+                            return {
+                              ...current,
+                              services: {
+                                ...current.services,
+                                grafana: {
+                                  ...current.services.grafana,
+                                  local: {
+                                    ...current.services.grafana.local,
+                                    hosts: Array.from(new Set(nextHosts)),
+                                  },
+                                },
+                              },
+                            }
+                          })
+                        }
+                      />
+                      {node.name}
+                    </label>
+                  )
+                })}
+              </span>
+            </label>
+          ) : (
+            <label>
+              <span>副本数</span>
+              <input
+                type="number"
+                min={1}
+                value={state.services.grafana.managed.replica_count}
+                onChange={(event) =>
+                  updateState(setState, (current) => ({
+                    ...current,
+                    services: {
+                      ...current.services,
+                      grafana: {
+                        ...current.services.grafana,
+                        managed: {
+                          ...current.services.grafana.managed,
+                          replica_count: Number(event.target.value),
+                        },
+                      },
+                    },
+                  }))
+                }
+              />
+            </label>
+          )}
+          <label>
+            <span>Requests.CPU</span>
+            <input
+              value={state.services.grafana[serviceMode].resources?.requests?.cpu ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    grafana: {
+                      ...current.services.grafana,
+                      [serviceMode]: {
+                        ...current.services.grafana[serviceMode],
+                        resources: {
+                          ...current.services.grafana[serviceMode].resources,
+                          requests: {
+                            ...current.services.grafana[serviceMode].resources?.requests,
+                            cpu: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          <label>
+            <span>Requests.Memory</span>
+            <input
+              value={state.services.grafana[serviceMode].resources?.requests?.memory ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    grafana: {
+                      ...current.services.grafana,
+                      [serviceMode]: {
+                        ...current.services.grafana[serviceMode],
+                        resources: {
+                          ...current.services.grafana[serviceMode].resources,
+                          requests: {
+                            ...current.services.grafana[serviceMode].resources?.requests,
+                            memory: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          <label>
+            <span>Limits.CPU</span>
+            <input
+              value={state.services.grafana[serviceMode].resources?.limits?.cpu ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    grafana: {
+                      ...current.services.grafana,
+                      [serviceMode]: {
+                        ...current.services.grafana[serviceMode],
+                        resources: {
+                          ...current.services.grafana[serviceMode].resources,
+                          limits: {
+                            ...current.services.grafana[serviceMode].resources?.limits,
+                            cpu: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          <label>
+            <span>Limits.Memory</span>
+            <input
+              value={state.services.grafana[serviceMode].resources?.limits?.memory ?? ''}
+              onChange={(event) =>
+                updateState(setState, (current) => ({
+                  ...current,
+                  services: {
+                    ...current.services,
+                    grafana: {
+                      ...current.services.grafana,
+                      [serviceMode]: {
+                        ...current.services.grafana[serviceMode],
+                        resources: {
+                          ...current.services.grafana[serviceMode].resources,
+                          limits: {
+                            ...current.services.grafana[serviceMode].resources?.limits,
+                            memory: event.target.value,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }))
+              }
+            />
+          </label>
+          {isLocal ? (
+            <label>
+              <span>数据路径</span>
+              <input
+                value={state.services.grafana.local.data_path}
+                onChange={(event) =>
+                  updateState(setState, (current) => ({
+                    ...current,
+                    services: {
+                      ...current.services,
+                      grafana: {
+                        ...current.services.grafana,
+                        local: {
+                          ...current.services.grafana.local,
+                          data_path: event.target.value,
+                        },
+                      },
+                    },
+                  }))
+                }
+              />
+            </label>
+          ) : (
+            <label>
+              <span>storageClassName</span>
+              <input
+                value={state.services.grafana.managed.storageClassName}
+                onChange={(event) =>
+                  updateState(setState, (current) => ({
+                    ...current,
+                    services: {
+                      ...current.services,
+                      grafana: {
+                        ...current.services.grafana,
+                        managed: {
+                          ...current.services.grafana.managed,
+                          storageClassName: event.target.value,
+                        },
+                      },
+                    },
+                  }))
+                }
+              />
+            </label>
+          )}
+        </div>
       </div>
     </section>
   )

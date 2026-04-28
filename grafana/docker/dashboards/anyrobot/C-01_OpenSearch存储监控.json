@@ -1,0 +1,2686 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [
+    {
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "巡检",
+      "tooltip": "查看巡检仪表盘",
+      "type": "link",
+      "url": "d/A-01"
+    },
+    {
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "主机",
+      "tooltip": "查看主机监控",
+      "type": "link",
+      "url": "d/B-01"
+    },
+    {
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": false,
+      "title": "OpenSearch存储",
+      "tooltip": "查看存储监控",
+      "type": "link",
+      "url": "d/C-01"
+    },
+    {
+      "asDropdown": true,
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [
+        "product",
+        "kubernetes",
+        "anyrobot",
+        "monitor"
+      ],
+      "title": "Kubernetes",
+      "type": "dashboards"
+    },
+    {
+      "asDropdown": true,
+      "icon": "dashboard",
+      "keepTime": true,
+      "tags": [
+        "product",
+        "anyrobot",
+        "app",
+        "monitor"
+      ],
+      "title": "应用",
+      "type": "dashboards"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 20,
+      "panels": [
+        {
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 18,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "> 使用仪表盘前，请先正确配置变量：\n\n| 变量名 | 当前值 | 描述 |\n| ---- | ---- | ----|\n| node | ${node} | OpenSearch存储节点 |\n| hotVar | disabled,${hot} | 热数据分区 |\n| warmVar | disabled,${warm} | 温数据分区 |\n| rootVar | disabled,${root} | 系统分区 |\n| deviceVar | ${rootDev}\\|${hotDev}\\|${warmDev} | 存储设备 |\n\n\n----\n【请根据服务器实际情况进行配置】",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.2.20",
+          "title": "变量",
+          "type": "text"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "说明",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 22,
+      "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "概览",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": [],
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(138, 138, 138)"
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 0,
+        "y": 2
+      },
+      "id": 34,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.2.20",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "aggregation": "Last",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "decimals": 2,
+          "displayAliasType": "Warning / Critical",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Never",
+          "editorMode": "code",
+          "expr": "count(node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$root|$hot|$warm\",fstype=~\"ext.*|xfs\"})",
+          "group": {
+            "alias": "",
+            "name": "Status Checks",
+            "url": ""
+          },
+          "instant": true,
+          "interval": "",
+          "legendFormat": "总数",
+          "refId": "C",
+          "units": "none",
+          "valueHandler": "Number Threshold"
+        }
+      ],
+      "title": "存储分区数",
+      "transformations": [],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 4,
+        "x": 3,
+        "y": 2
+      },
+      "id": 38,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "存储分区空间使用率监控告警",
+      "type": "text"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "100%",
+      "combine": {
+        "label": "",
+        "threshold": ""
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "fontSize": "80%",
+      "format": "bytes",
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 7,
+        "y": 2
+      },
+      "id": 30,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pieType": "pie",
+      "pluginVersion": "7.1.1",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sort(sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})by(node)-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})by(node))",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ node }}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})",
+          "format": "time_series",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "已使用总空间",
+          "refId": "B"
+        }
+      ],
+      "title": "热数据节点分布",
+      "transformations": [],
+      "type": "piechart",
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "100%",
+      "combine": {
+        "label": "",
+        "threshold": ""
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "fontSize": "80%",
+      "format": "bytes",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 2
+      },
+      "id": 28,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pieType": "pie",
+      "pluginVersion": "7.1.1",
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sort(sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})by(node)-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})by(node))",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ node }}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})",
+          "format": "time_series",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "已使用总空间",
+          "refId": "B"
+        }
+      ],
+      "title": "温数据节点分布",
+      "transformations": [],
+      "type": "piechart",
+      "valueName": "current"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "统计磁盘空间使用百分比超过$disk_warning%的分区数量",
+      "fieldConfig": {
+        "defaults": {
+          "links": [],
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 2,
+        "x": 3,
+        "y": 3
+      },
+      "id": 36,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.2.20",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "aggregation": "Last",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "decimals": 2,
+          "displayAliasType": "Warning / Critical",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Never",
+          "editorMode": "code",
+          "expr": "count($disk_critical > (1 -node_filesystem_free_bytes{node=~\"$node\",mountpoint=~\"$root|$hot|$warm\",fstype=~\"ext.*|xfs\"}/node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$root|$hot|$warm\",fstype=~\"ext.*|xfs\"}) * 100 >= $disk_warning )",
+          "group": {
+            "alias": "",
+            "name": "Status Checks",
+            "url": ""
+          },
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Warning",
+          "refId": "B",
+          "units": "none",
+          "valueHandler": "Number Threshold"
+        }
+      ],
+      "title": "警告",
+      "transformations": [],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "统计磁盘空间使用百分比超过$disk_critical%的分区数量",
+      "fieldConfig": {
+        "defaults": {
+          "links": [],
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green"
+              },
+              {
+                "color": "dark-red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 2,
+        "x": 5,
+        "y": 3
+      },
+      "id": 40,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.2.20",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "aggregation": "Last",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "decimals": 2,
+          "displayAliasType": "Warning / Critical",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Never",
+          "editorMode": "code",
+          "expr": "count((1 -node_filesystem_free_bytes{node=~\"$node\",mountpoint=~\"$root|$hot|$warm\",fstype=~\"ext.*|xfs\"}/node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$root|$hot|$warm\",fstype=~\"ext.*|xfs\"}) * 100 >= $disk_critical )",
+          "group": {
+            "alias": "",
+            "name": "Status Checks",
+            "url": ""
+          },
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Critical",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "Number Threshold"
+        }
+      ],
+      "title": "紧急",
+      "transformations": [],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "": {
+                  "text": ""
+                }
+              },
+              "type": "value"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 7,
+        "x": 0,
+        "y": 8
+      },
+      "id": 32,
+      "links": [],
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:1129",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:1130",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "options": {
+        "autoSizeColumns": true,
+        "autoSizePolygons": true,
+        "autoSizeRows": true,
+        "compositeConfig": {
+          "animationSpeed": "1500",
+          "composites": [
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": false,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 1",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "(.*)-system"
+                }
+              ],
+              "name": "系统盘",
+              "order": 0,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            },
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": false,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 2",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "(.*)-opensearch-hot"
+                }
+              ],
+              "name": "热数据",
+              "order": 1,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            },
+            {
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": false,
+              "displayMode": "all",
+              "enabled": true,
+              "isTemplated": false,
+              "label": "COMPOSITE 3",
+              "metrics": [
+                {
+                  "order": 0,
+                  "seriesMatch": "(.*)-opensearch-warm"
+                }
+              ],
+              "name": "温数据",
+              "order": 2,
+              "showComposite": true,
+              "showMembers": false,
+              "showName": true,
+              "showValue": true,
+              "templatedName": ""
+            }
+          ],
+          "enabled": true
+        },
+        "ellipseCharacters": 18,
+        "ellipseEnabled": false,
+        "globalAutoScaleFonts": true,
+        "globalClickthrough": "",
+        "globalClickthroughNewTabEnabled": true,
+        "globalClickthroughSanitizedEnabled": true,
+        "globalDecimals": 2,
+        "globalDisplayMode": "all",
+        "globalDisplayTextTriggeredEmpty": "",
+        "globalFillColor": "#FADE2A",
+        "globalFontSize": 12,
+        "globalGradientsEnabled": true,
+        "globalOperator": "last",
+        "globalPolygonBorderColor": "black",
+        "globalPolygonBorderSize": 1,
+        "globalPolygonSize": 50,
+        "globalRegexPattern": "",
+        "globalShape": "hexagon_pointed_top",
+        "globalShowTooltipColumnHeadersEnabled": true,
+        "globalShowValueEnabled": true,
+        "globalTextFontAutoColor": "#000000",
+        "globalTextFontAutoColorEnabled": true,
+        "globalTextFontColor": "",
+        "globalTextFontFamily": "Roboto",
+        "globalThresholdsConfig": [],
+        "globalTooltipsEnabled": true,
+        "globalTooltipsFontFamily": "Roboto",
+        "globalTooltipsShowTimestampEnabled": true,
+        "globalUnitFormat": "short",
+        "layoutDisplayLimit": 100,
+        "layoutNumColumns": 8,
+        "layoutNumRows": 8,
+        "overrideConfig": {
+          "overrides": [
+            {
+              "alias": "",
+              "clickThrough": "",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "colors": [
+                "#299c46",
+                "#e5ac0e",
+                "#bf1b00",
+                "#4040a0"
+              ],
+              "decimals": "",
+              "enabled": true,
+              "label": "OVERRIDE 1",
+              "metricName": ".*",
+              "operatorName": "last",
+              "order": 0,
+              "prefix": "",
+              "scaledDecimals": 0,
+              "suffix": "",
+              "thresholds": [
+                {
+                  "color": "#299c46",
+                  "state": 0,
+                  "value": 0
+                },
+                {
+                  "color": "#e5ac0e",
+                  "state": 1,
+                  "value": #STORAGE_WARNING#
+                },
+                {
+                  "color": "#bf1b00",
+                  "state": 2,
+                  "value": #STORAGE_CRITICAL#
+                }
+              ],
+              "unitFormat": "percent"
+            }
+          ]
+        },
+        "panelId": 0,
+        "radius": 100,
+        "sortByDirection": 1,
+        "sortByField": "name",
+        "tooltipDisplayMode": "all",
+        "tooltipDisplayTextTriggeredEmpty": "",
+        "tooltipPrimarySortByField": "thresholdLevel",
+        "tooltipPrimarySortDirection": 2,
+        "tooltipSecondarySortByField": "value",
+        "tooltipSecondarySortDirection": 2
+      },
+      "pluginVersion": "2.0.9",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(1 -node_filesystem_free_bytes{node=~\"$node\",mountpoint=~\"$root\",fstype=~\"ext.*|xfs\"}/node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$root\",fstype=~\"ext.*|xfs\"}) * 100",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ node }}-{{mountpoint}}-system",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(1-(node_filesystem_free_bytes{node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"} / node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"})) * 100",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ node }}-{{mountpoint}}-opensearch-hot",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(1-(node_filesystem_free_bytes{node=~\"$node\",mountpoint=~\"$warm\",fstype=~\"ext.*|xfs\"} / node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$warm\",fstype=~\"ext.*|xfs\"})) * 100",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ node }}-{{mountpoint}}-opensearch-warm",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(1-(sum(node_filesystem_free_bytes{node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"})by(node) / sum(node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"})by(node))) * 100",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ node }}-Total-opensearch-hot",
+          "refId": "E"
+        }
+      ],
+      "title": "数据区域概览",
+      "type": "grafana-polystat-panel"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "使用率"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "semi-dark-green"
+                    },
+                    {
+                      "color": "semi-dark-yellow",
+                      "value": #STORAGE_WARNING#
+                    },
+                    {
+                      "color": "semi-dark-red",
+                      "value": #STORAGE_CRITICAL#
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "节点"
+            },
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "Total"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "可用空间"
+            },
+            "properties": [
+              {
+                "id": "custom.width"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 7,
+        "y": 8
+      },
+      "id": 24,
+      "links": [],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"})by(node) or sum(node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"})",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_filesystem_avail_bytes {node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"})by(node) or sum(node_filesystem_avail_bytes {node=~\"$node\",mountpoint=~\"$hot\",fstype=~\"ext.*|xfs\"})",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "((sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})by(node)-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})by(node)) *100/(sum(node_filesystem_avail_bytes {node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})by(node)+sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})by(node)-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})by(node))) or ((sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})) *100/(sum(node_filesystem_avail_bytes {node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})+sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$hot\"})))",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "C"
+        }
+      ],
+      "title": "热数据区(按节点统计)",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #A": "总空间",
+              "Value #B": "可用空间",
+              "Value #C": "使用率",
+              "node": "节点"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "使用率"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "semi-dark-green"
+                    },
+                    {
+                      "color": "semi-dark-yellow",
+                      "value": #STORAGE_WARNING#
+                    },
+                    {
+                      "color": "semi-dark-red",
+                      "value": #STORAGE_CRITICAL#
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "节点"
+            },
+            "properties": [
+              {
+                "id": "noValue",
+                "value": "Total"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 8
+      },
+      "id": 26,
+      "links": [],
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "节点"
+          }
+        ]
+      },
+      "pluginVersion": "9.2.20",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$warm\",fstype=~\"ext.*|xfs\"})by(node) or sum(node_filesystem_size_bytes{node=~\"$node\",mountpoint=~\"$warm\",fstype=~\"ext.*|xfs\"})",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(node_filesystem_avail_bytes {node=~\"$node\",mountpoint=~\"$warm\",fstype=~\"ext.*|xfs\"})by(node) or sum(node_filesystem_avail_bytes {node=~\"$node\",mountpoint=~\"$warm\",fstype=~\"ext.*|xfs\"})",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "((sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})by(node)-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})by(node)) *100/(sum(node_filesystem_avail_bytes {node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})by(node)+sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})by(node)-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})by(node))) or ((sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})) *100/(sum(node_filesystem_avail_bytes {node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})+sum(node_filesystem_size_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})-sum(node_filesystem_free_bytes{node=~\"$node\",fstype=~\"ext.*|xfs\",mountpoint =~\"$warm\"})))",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "C"
+        }
+      ],
+      "title": "温数据区(按节点统计)",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #A": "总空间",
+              "Value #B": "可用空间",
+              "Value #C": "使用率",
+              "node": "节点"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 14,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "left",
+                "displayMode": "auto",
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "使用率"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "semi-dark-green"
+                        },
+                        {
+                          "color": "dark-yellow",
+                          "value": #STORAGE_WARNING#
+                        },
+                        {
+                          "color": "semi-dark-red",
+                          "value": #STORAGE_CRITICAL#
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-background"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "__name__"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 377
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "job"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 328
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "类别"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "text": "系统盘"
+                          },
+                          "1": {
+                            "text": "温数据"
+                          },
+                          "2": {
+                            "text": "热数据"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-text"
+                  },
+                  {
+                    "id": "thresholds",
+                    "value": {
+                      "mode": "absolute",
+                      "steps": [
+                        {
+                          "color": "dark-green"
+                        },
+                        {
+                          "color": "light-blue",
+                          "value": 1
+                        },
+                        {
+                          "color": "semi-dark-red",
+                          "value": 2
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 3
+          },
+          "id": 2,
+          "links": [],
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "类别"
+              }
+            ]
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "max(label_replace(label_replace(label_replace(node_filesystem_size_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}, \"es_area\", \"2\", \"mountpoint\",  \"$hotVar\"), \"es_area\", \"1\", \"mountpoint\",  \"$warmVar\"), \"es_area\", \"0\", \"mountpoint\",  \"$rootVar\"))by(node,es_area,mountpoint,device)",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "max(node_filesystem_avail_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"})by(node,mountpoint,device)",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "10s",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "max((node_filesystem_size_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}-node_filesystem_free_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}) *100/(node_filesystem_avail_bytes {fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}+(node_filesystem_size_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}-node_filesystem_free_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"})))by(node,mountpoint,device)",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "title": "各分区空间使用情况",
+          "transformations": [
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": false,
+                  "addonmanager_kubernetes_io_mode": false,
+                  "anyrobot_monitor": false,
+                  "device": true,
+                  "fstype": false,
+                  "instance": false,
+                  "job": false,
+                  "kubernetes_io_cluster_service": false,
+                  "kubernetes_io_name": false,
+                  "kubernetes_name": false,
+                  "kubernetes_namespace": false,
+                  "mountpoint": false,
+                  "name": false
+                },
+                "indexByName": {
+                  "Time": 0,
+                  "Value #A": 6,
+                  "Value #B": 7,
+                  "Value #C": 5,
+                  "device": 1,
+                  "es_area": 3,
+                  "mountpoint": 4,
+                  "node": 2
+                },
+                "renameByName": {
+                  "Value #A": "可用空间",
+                  "Value #B": "使用率",
+                  "Value #C": "总空间",
+                  "es_area": "类别",
+                  "mountpoint": "分区",
+                  "node": "节点"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/Inodes.*/"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percentunit"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  },
+                  {
+                    "id": "max",
+                    "value": 1
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "hidden"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 3
+          },
+          "id": 6,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "(node_filesystem_size_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}-node_filesystem_free_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}) *100/(node_filesystem_avail_bytes {fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}+(node_filesystem_size_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}-node_filesystem_free_bytes{fstype=~\"ext.*|xfs\",mountpoint =~\"$hotVar|$warmVar|$rootVar\",node=~\"$node\"}))",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{mountpoint}}",
+              "refId": "A"
+            }
+          ],
+          "title": "磁盘使用率",
+          "type": "timeseries"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "存储分区",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 16,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "每个磁盘存储设备每秒读取或写入的比特数",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "读取（-）/写入（+）",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "vda_write"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#6ED0E0",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*_读取$/"
+                },
+                "properties": [
+                  {
+                    "id": "custom.transform",
+                    "value": "negative-Y"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 4
+          },
+          "id": 4,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "irate(node_disk_read_bytes_total{device=~\"$deviceVar\",node=~\"$node\"}[5m])",
+              "format": "time_series",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}_读取",
+              "refId": "A",
+              "step": 10
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "irate(node_disk_written_bytes_total{device=~\"$deviceVar\",node=~\"$node\"}[5m])",
+              "format": "time_series",
+              "hide": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}_写入",
+              "refId": "B",
+              "step": 10
+            }
+          ],
+          "title": "磁盘读写容量速率(bytes/秒)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "读取/写入: 每个磁盘存储设备每秒读/写完成次数\n\nIO:每个磁盘存储设备每秒正在处理的输入/输出请求数",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "读取（-）/写入（+）I/O ops/sec",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "iops"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "vda_write"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#6ED0E0",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*_读取$/"
+                },
+                "properties": [
+                  {
+                    "id": "custom.transform",
+                    "value": "negative-Y"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 4
+          },
+          "id": 8,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "irate(node_disk_reads_completed_total{device=~\"$deviceVar\",node=~\"$node\"}[5m])",
+              "format": "time_series",
+              "hide": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}_读取",
+              "refId": "A",
+              "step": 10
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "irate(node_disk_writes_completed_total{device=~\"$deviceVar\",node=~\"$node\"}[5m])",
+              "format": "time_series",
+              "hide": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}_写入",
+              "refId": "B",
+              "step": 10
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "node_disk_io_now{device=~\"$deviceVar\",node=~\"$node\"}",
+              "format": "time_series",
+              "hide": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}",
+              "refId": "C"
+            }
+          ],
+          "title": "磁盘读写次数速率(IOPS)(次/秒)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Idle - Waiting for something to happen"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#052B51",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "guest"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#9AC48A",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "idle"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#052B51",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "iowait"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#EAB839",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "irq"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#BF1B00",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "nice"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#C15C17",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "sdb_每秒I/O操作%"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#d683ce",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "softirq"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#E24D42",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "steal"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#FCE2DE",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "system"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#508642",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "user"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#5195CE",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "磁盘花费在I/O操作占比"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#ba43a9",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 12
+          },
+          "id": 10,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "irate(node_disk_io_time_seconds_total{device=~\"$deviceVar\",node=~\"$node\"}[5m])",
+              "format": "time_series",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}",
+              "refId": "A"
+            }
+          ],
+          "title": "磁盘IO使用率",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "每个磁盘存储设备在读/写操作花费的秒数",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "读取（-）/写入（+）",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "vda"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#6ED0E0",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/,*_读取$/"
+                },
+                "properties": [
+                  {
+                    "id": "custom.transform",
+                    "value": "negative-Y"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 12
+          },
+          "id": 12,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "9.2.20",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "increase(node_disk_read_time_seconds_total{device=~\"$deviceVar\",node=~\"$node\"}[5m]) / increase(node_disk_reads_completed_total{device=~\"$deviceVar\",node=~\"$node\"}[5m])",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}_读取",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "increase(node_disk_write_time_seconds_total{device=~\"$deviceVar\",node=~\"$node\"}[5m]) / increase(node_disk_writes_completed_total{device=~\"$deviceVar\",node=~\"$node\"}[5m])",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{node}}-{{device}}_写入",
+              "refId": "C"
+            }
+          ],
+          "title": "每次磁盘I/O操作耗时(秒/次)",
+          "type": "timeseries"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "存储设备",
+      "type": "row"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [
+    "product",
+    "anyrobot",
+    "monitor",
+    "storage",
+    "detail",
+    "opensearch",
+    "hot",
+    "warm"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(opensearch_filesystem_data_size_bytes, name)",
+        "hide": 2,
+        "includeAll": true,
+        "multi": false,
+        "name": "opensearch_pod",
+        "options": [],
+        "query": {
+          "query": "label_values(opensearch_filesystem_data_size_bytes, name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(kube_pod_info{pod=~\"$opensearch_pod\"}, node)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "节点",
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_pod_info{pod=~\"$opensearch_pod\"}, node)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "#OPENSEARCH_VARS_ROOT#",
+          "value": "#OPENSEARCH_VARS_ROOT#"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "系统盘",
+        "multi": false,
+        "name": "rootVar",
+        "options": [
+          {
+            "selected": false,
+            "text": "disabled",
+            "value": "disabled"
+          },
+          {
+            "selected": true,
+            "text": "#OPENSEARCH_VARS_ROOT#",
+            "value": "#OPENSEARCH_VARS_ROOT#"
+          }
+        ],
+        "query": "disabled,#OPENSEARCH_VARS_ROOT#",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "#OPENSEARCH_VARS_HOT#",
+          "value": "#OPENSEARCH_VARS_HOT#"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "热数据",
+        "multi": false,
+        "name": "hotVar",
+        "options": [
+          {
+            "selected": false,
+            "text": "disabled",
+            "value": "disabled"
+          },
+          {
+            "selected": true,
+            "text": "#OPENSEARCH_VARS_HOT#",
+            "value": "#OPENSEARCH_VARS_HOT#"
+          }
+        ],
+        "query": "disabled,#OPENSEARCH_VARS_HOT#",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "#OPENSEARCH_VARS_WARM#",
+          "value": "#OPENSEARCH_VARS_WARM#"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "温数据",
+        "multi": false,
+        "name": "warmVar",
+        "options": [
+          {
+            "selected": false,
+            "text": "disabled",
+            "value": "disabled"
+          },
+          {
+            "selected": true,
+            "text": "#OPENSEARCH_VARS_WARM#",
+            "value": "#OPENSEARCH_VARS_WARM#"
+          }
+        ],
+        "query": "disabled,#OPENSEARCH_VARS_WARM#",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "hide": 2,
+        "name": "root",
+        "query": "#OPENSEARCH_VARS_ROOT#",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "hide": 2,
+        "name": "hot",
+        "query": "#OPENSEARCH_VARS_HOT#",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "hide": 2,
+        "name": "warm",
+        "query": "#OPENSEARCH_VARS_WARM#",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "hide": 2,
+        "name": "rootDev",
+        "query": "dm-0",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "hide": 2,
+        "name": "hotDev",
+        "query": "dm-0",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "hide": 2,
+        "name": "warmDev",
+        "query": "dm-0",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "dm-0|dm-0|dm-0",
+          "value": "dm-0|dm-0|dm-0"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "存储设备",
+        "multi": false,
+        "name": "deviceVar",
+        "options": [
+          {
+            "selected": false,
+            "text": "#OPENSEARCH_VARS_ROOTDEV#|#OPENSEARCH_VARS_HOTDEV#|#OPENSEARCH_VARS_WARMDEV#",
+            "value": "#OPENSEARCH_VARS_ROOTDEV#|#OPENSEARCH_VARS_HOTDEV#|#OPENSEARCH_VARS_WARMDEV#"
+          },
+          {
+            "selected": false,
+            "text": "#OPENSEARCH_VARS_ROOTDEV#",
+            "value": "#OPENSEARCH_VARS_ROOTDEV#"
+          },
+          {
+            "selected": false,
+            "text": "#OPENSEARCH_VARS_HOTDEV#",
+            "value": "#OPENSEARCH_VARS_HOTDEV#"
+          },
+          {
+            "selected": false,
+            "text": "dm-0",
+            "value": "dm-0"
+          }
+        ],
+        "query": "#OPENSEARCH_VARS_ROOTDEV#|#OPENSEARCH_VARS_HOTDEV#|#OPENSEARCH_VARS_WARMDEV#,#OPENSEARCH_VARS_HOTDEV#,#OPENSEARCH_VARS_WARMDEV#,#OPENSEARCH_VARS_ROOTDEV#",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "hide": 2,
+        "name": "disk_warning",
+        "query": "#STORAGE_WARNING#",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "hide": 2,
+        "name": "disk_critical",
+        "query": "#STORAGE_CRITICAL#",
+        "skipUrlSync": false,
+        "type": "constant"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "C-01_OpenSearch存储监控",
+  "uid": "C-01",
+  "version": 1,
+  "weekStart": ""
+}

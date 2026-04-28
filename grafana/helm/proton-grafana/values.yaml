@@ -1,0 +1,112 @@
+namespace: resource
+
+#环境变量：语言/时区
+env:
+  language: en_US.UTF-8
+  timezone: Asia/Shanghai
+
+replicaCount: 1
+
+nodeSelector: {}
+
+image:
+  registry: acr.aishu.cn
+  pullPolicy: IfNotPresent
+  grafana:
+    repository: proton/proton-grafana
+    tag: 1.0.6
+
+service:
+  ingressclassname: class-443
+  enableDualStack: false
+  grafana:
+    type: ClusterIP #NodePort
+    port: 3000
+    nodePort: 30012
+    ingress:
+      enabled: true
+      interface:
+        grafana:
+          path: /grafana
+          value: 3000
+
+config:
+  grafanaENV:
+    GF_ANALYTICS_CHECK_FOR_UPDATES: false
+    GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: false
+    GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning-dashboards/anyrobot/A-01_巡检仪表盘.json
+    GF_LOG_LEVEL: info
+    GF_METRICS_ENABLED: false
+    GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: anyrobot,anyrobot-metric-model
+    GF_SECURITY_ADMIN_USER: admin
+    GF_SECURITY_ADMIN_PASSWORD: eisoo.com
+    GF_SECURITY_ALLOW_EMBEDDING: true
+    GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana"
+    GF_SERVER_SERVE_FROM_SUB_PATH: true
+    GF_USERS_DEFAULT_THEME: light
+    GF_USERS_DEFAULT_LANGUAGE: zh-Hans
+  datasource:
+    prometheus:
+      enabled: true
+      protocol: http
+      host: prometheus.resource
+      port: 9090
+    # uniquery:
+    #   enabled: true
+    #   protocol: http
+    #   host: uniquery-anyrobot.anyrobot
+    #   port: 13011
+    #   dataManagerProtocol: http
+    #   dataManagerHost: data-manager-anyrobot.anyrobot
+    #   dataManagerPort: 13001
+    # metricModel:
+    #   enabled: true
+    #   protocol: http
+    #   host: uniquery-anyrobot.anyrobot
+    #   port: 13011
+    #   dataModelProtocol: http
+    #   dataModelHost: data-model-anyrobot.anyrobot
+    #   dataManagerPort: 13020
+  monitor:
+    opensearch:
+      root: /
+      hot: /
+      warm: /
+      rootDev: dm-0
+      hotDev: dm-0
+      warmDev: dm-0
+    threshold:
+      storage:
+        warning: 70
+        critical: 80
+      memory:
+        warning: 80
+        critical: 90
+      cpu:
+        warning: 80
+        critical: 90
+      load1:
+        warning: 2
+        critical: 3
+      load5:
+        warning: 1.5
+        critical: 2
+      load15:
+        warning: 1.5
+        critical: 2
+
+storage:
+  capacity: 10Gi
+  storageClassName: ""
+  local:
+    0:
+      host: node0
+      path: /sysvol/grafana
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 2Gi
+  limits:
+    cpu: 1000m
+    memory: 3Gi

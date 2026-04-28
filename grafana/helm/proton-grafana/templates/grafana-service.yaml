@@ -1,0 +1,25 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "grafana.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "grafana.name" . }}
+spec:
+{{- if .Values.service.enableDualStack }}
+  ipFamilies:
+  - IPv6
+  - IPv4
+  ipFamilyPolicy: PreferDualStack
+{{- end }}
+  type: {{ .Values.service.grafana.type }}
+  selector:
+    app: {{ template "grafana.name" . }}
+  ports:
+    - name: grafana
+      port: {{ .Values.service.grafana.port }}
+      protocol: TCP
+      targetPort: grafana
+      {{- if eq .Values.service.grafana.type "NodePort" }}
+      nodePort: {{ .Values.service.grafana.nodePort }}
+      {{- end }}

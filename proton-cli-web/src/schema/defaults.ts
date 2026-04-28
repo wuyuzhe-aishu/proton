@@ -254,6 +254,72 @@ export const defaultWizardState: WizardState = {
         },
       },
     },
+    prometheus: {
+      local: {
+        hosts: ['node1'],
+        data_path: '/sysvol/components/prometheus',
+        storage_capacity: '',
+        resources: {
+          limits: {
+            cpu: '500m',
+            memory: '1Gi',
+          },
+          requests: {
+            cpu: '100m',
+            memory: '256Mi',
+          },
+        },
+        storageClassName: '',
+      },
+      managed: {
+        replica_count: 1,
+        storage_capacity: '',
+        storageClassName: 'csi-disk',
+        resources: {
+          limits: {
+            cpu: '500m',
+            memory: '1Gi',
+          },
+          requests: {
+            cpu: '100m',
+            memory: '256Mi',
+          },
+        },
+      },
+    },
+    grafana: {
+      local: {
+        hosts: ['node1'],
+        data_path: '/sysvol/components/grafana',
+        storage_capacity: '',
+        resources: {
+          limits: {
+            cpu: '200m',
+            memory: '256Mi',
+          },
+          requests: {
+            cpu: '100m',
+            memory: '128Mi',
+          },
+        },
+        storageClassName: '',
+      },
+      managed: {
+        replica_count: 1,
+        storage_capacity: '',
+        storageClassName: 'csi-disk',
+        resources: {
+          limits: {
+            cpu: '200m',
+            memory: '256Mi',
+          },
+          requests: {
+            cpu: '100m',
+            memory: '128Mi',
+          },
+        },
+      },
+    },
   },
   resource_connect_info: {
     rds: {
