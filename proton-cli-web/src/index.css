@@ -228,30 +228,6 @@ button {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
-.legacy-password-field {
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-}
-
-.legacy-password-field input {
-  min-width: 0;
-}
-
-.legacy-password-toggle {
-  flex: 0 0 auto;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background: #f8fafc;
-  color: #334155;
-  padding: 10px 12px;
-}
-
-.legacy-password-toggle:hover {
-  border-color: #94a3b8;
-  background: #f1f5f9;
-}
-
 .legacy-muted {
   margin: 0;
   color: #6b7280;

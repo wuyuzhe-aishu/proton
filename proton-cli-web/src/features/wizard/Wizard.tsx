@@ -273,29 +273,6 @@ function setResourceSource(
   }
 }
 
-function PasswordField({
-  value,
-  visible,
-  onChange,
-  onToggleVisibility,
-  inputRef,
-}: {
-  value: string
-  visible: boolean
-  onChange: (value: string) => void
-  onToggleVisibility: () => void
-  inputRef?: RefObject<HTMLInputElement | null>
-}) {
-  return (
-    <div className="legacy-password-field">
-      <input ref={inputRef} type={visible ? 'text' : 'password'} value={value} onChange={(event) => onChange(event.target.value)} />
-      <button type="button" className="legacy-password-toggle" onClick={onToggleVisibility}>
-        {visible ? '隐藏' : '显示'}
-      </button>
-    </div>
-  )
-}
-
 function TemplateChooser({
   onChoose,
 }: {
@@ -1251,7 +1228,7 @@ function RepositoryStep({
                 <label>
                   <span>Registry密码</span>
                   <input
-                    type="password"
+                    type="password" autoComplete="new-password"
                     value={state.cr.external.registry.password}
                     onChange={(event) =>
                       updateState(setState, (current) => ({
@@ -1323,7 +1300,7 @@ function RepositoryStep({
                 <label>
                   <span>Chartmuseum密码</span>
                   <input
-                    type="password"
+                    type="password" autoComplete="new-password"
                     value={state.cr.external.chartmuseum.password}
                     onChange={(event) =>
                       updateState(setState, (current) => ({
@@ -1395,7 +1372,7 @@ function RepositoryStep({
                 <label>
                   <span>OCI密码</span>
                   <input
-                    type="password"
+                    type="password" autoComplete="new-password"
                     value={state.cr.external.oci.password}
                     onChange={(event) =>
                       updateState(setState, (current) => ({
@@ -1448,18 +1425,11 @@ function RepositoryStep({
 function ServiceStep({
   state,
   setState,
-  passwordVisibility,
-  onTogglePasswordVisibility,
   mariadbPasswordRef,
   redisPasswordRef,
 }: {
   state: WizardState
   setState: Dispatch<SetStateAction<WizardState>>
-  passwordVisibility: {
-    mariadb: boolean
-    redis: boolean
-  }
-  onTogglePasswordVisibility: (field: 'mariadb' | 'redis') => void
   mariadbPasswordRef: RefObject<HTMLInputElement | null>
   redisPasswordRef: RefObject<HTMLInputElement | null>
 }) {
@@ -1669,12 +1639,11 @@ function ServiceStep({
             </label>
             <label>
               <span>密码*</span>
-              <PasswordField
-                inputRef={mariadbPasswordRef}
+              <input
+                ref={mariadbPasswordRef}
+                type="password" autoComplete="new-password"
                 value={mariadb.admin_passwd}
-                visible={passwordVisibility.mariadb}
-                onToggleVisibility={() => onTogglePasswordVisibility('mariadb')}
-                onChange={(value) =>
+                onChange={(event) =>
                   updateState(setState, (current) => ({
                     ...current,
                     services: {
@@ -1683,7 +1652,7 @@ function ServiceStep({
                         ...current.services.mariadb,
                         [serviceMode]: {
                           ...current.services.mariadb[serviceMode],
-                          admin_passwd: value,
+                          admin_passwd: event.target.value,
                         },
                       },
                     },
@@ -1852,12 +1821,11 @@ function ServiceStep({
             </label>
             <label>
               <span>密码*</span>
-              <PasswordField
-                inputRef={redisPasswordRef}
+              <input
+                ref={redisPasswordRef}
+                type="password" autoComplete="new-password"
                 value={redis.admin_passwd}
-                visible={passwordVisibility.redis}
-                onToggleVisibility={() => onTogglePasswordVisibility('redis')}
-                onChange={(value) =>
+                onChange={(event) =>
                   updateState(setState, (current) => ({
                     ...current,
                     services: {
@@ -1866,7 +1834,7 @@ function ServiceStep({
                         ...current.services.redis,
                         [serviceMode]: {
                           ...current.services.redis[serviceMode],
-                          admin_passwd: value,
+                          admin_passwd: event.target.value,
                         },
                       },
                     },
@@ -3330,7 +3298,7 @@ function ConnectStep({
                       <span>密码</span>
                       <input
                         aria-label="RDS admin password"
-                        type="password"
+                        type="password" autoComplete="new-password"
                         value={state.resource_connect_info.rds.admin_passwd}
                         onChange={(event) => updateRdsField('admin_passwd', event.target.value)}
                       />
@@ -3350,7 +3318,7 @@ function ConnectStep({
                     <span>密码</span>
                     <input
                       aria-label="RDS password"
-                      type="password"
+                      type="password" autoComplete="new-password"
                       value={state.resource_connect_info.rds.password}
                       onChange={(event) => updateRdsField('password', event.target.value)}
                     />
@@ -3445,7 +3413,7 @@ function ConnectStep({
                     <span>密码</span>
                     <input
                       aria-label="Redis password"
-                      type="password"
+                      type="password" autoComplete="new-password"
                       value={state.resource_connect_info.redis.password}
                       onChange={(event) => updateRedisField('password', event.target.value)}
                     />
@@ -3610,7 +3578,7 @@ function ConnectStep({
                     <span>密码</span>
                     <input
                       aria-label="OpenSearch password"
-                      type="password"
+                      type="password" autoComplete="new-password"
                       value={state.resource_connect_info.opensearch.password}
                       onChange={(event) => updateOpenSearchField('password', event.target.value)}
                     />
@@ -3782,7 +3750,7 @@ function ConnectStep({
                       <span>密码</span>
                       <input
                         aria-label="MQ password"
-                        type="password"
+                        type="password" autoComplete="new-password"
                         value={state.resource_connect_info.mq.auth.password}
                         onChange={(event) => updateMqAuth('password', event.target.value)}
                       />
@@ -3823,10 +3791,6 @@ export function Wizard() {
   const [state, setState] = useState(defaultWizardState)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [previewFormat, setPreviewFormat] = useState<'json' | 'yaml'>('json')
-  const [servicePasswordVisibility, setServicePasswordVisibility] = useState({
-    mariadb: false,
-    redis: false,
-  })
   const mariadbPasswordRef = useRef<HTMLInputElement>(null)
   const redisPasswordRef = useRef<HTMLInputElement>(null)
   const errorCardRef = useRef<HTMLElement>(null)
@@ -3841,10 +3805,6 @@ export function Wizard() {
     setStorageMode(mode)
     setCurrentStepIndex(0)
     setScreen('steps')
-    setServicePasswordVisibility({
-      mariadb: false,
-      redis: false,
-    })
     setState((current) => ({
       ...current,
       deploymentKind: mode === 'standard' ? 'local' : 'managed',
@@ -3880,13 +3840,6 @@ export function Wizard() {
 
   function goPrev() {
     setCurrentStepIndex((index) => Math.max(index - 1, 0))
-  }
-
-  function toggleServicePasswordVisibility(field: 'mariadb' | 'redis') {
-    setServicePasswordVisibility((current) => ({
-      ...current,
-      [field]: !current[field],
-    }))
   }
 
   function focusIssueTarget() {
@@ -3987,8 +3940,6 @@ export function Wizard() {
                 <ServiceStep
                   state={state}
                   setState={setState}
-                  passwordVisibility={servicePasswordVisibility}
-                  onTogglePasswordVisibility={toggleServicePasswordVisibility}
                   mariadbPasswordRef={mariadbPasswordRef}
                   redisPasswordRef={redisPasswordRef}
                 />
