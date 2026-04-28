@@ -56,7 +56,6 @@ describe('aligned flow', () => {
     expect(screen.queryByText('内部IP')).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: '下一步' }))
-    expect(screen.getByText('docker IP')).toBeInTheDocument()
     expect(screen.getByText('Pod 网段')).toBeInTheDocument()
     expect(screen.getByText('Serivce 网段')).toBeInTheDocument()
     expect(screen.getByText('etcd 数据路径')).toBeInTheDocument()

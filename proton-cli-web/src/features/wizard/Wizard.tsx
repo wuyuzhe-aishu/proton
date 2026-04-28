@@ -609,27 +609,6 @@ function NetworkStep({
               />
             </label>
             <label>
-              <span>docker IP</span>
-              <input
-                value={state.cs.local.host_network.bip}
-                onChange={(event) =>
-                  updateState(setState, (current) => ({
-                    ...current,
-                    cs: {
-                      ...current.cs,
-                      local: {
-                        ...current.cs.local,
-                        host_network: {
-                          ...current.cs.local.host_network,
-                          bip: event.target.value,
-                        },
-                      },
-                    },
-                  }))
-                }
-              />
-            </label>
-            <label>
               <span>Pod 网段</span>
               <input
                 value={state.cs.local.host_network.pod_network_cidr}
