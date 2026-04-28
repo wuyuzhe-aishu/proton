@@ -7,7 +7,7 @@ describe('validateWizardState', () => {
   it('accepts the default local state when resource connections are switched to internal', () => {
     const result = validateWizardState({
       ...defaultWizardState,
-      nodes: [{ name: 'node1', ip4: '192.168.40.11', ip6: '' }],
+       nodes: [{ id: 'test-node-1', name: 'node1', ip4: '192.168.40.11', ip6: '' }],
       resource_connect_info: {
         rds: {
           ...defaultWizardState.resource_connect_info.rds,
@@ -139,7 +139,7 @@ describe('validateWizardState', () => {
   it('requires an ipv6 address when dual stack includes IPv6', () => {
     const result = validateWizardState({
       ...defaultWizardState,
-      nodes: [{ name: 'node1', ip4: '192.168.40.11', ip6: '' }],
+       nodes: [{ id: 'test-node-1', name: 'node1', ip4: '192.168.40.11', ip6: '' }],
       cs: {
         ...defaultWizardState.cs,
         local: {
@@ -241,7 +241,7 @@ describe('validateWizardState', () => {
           },
         },
       },
-      nodes: [{ name: 'node1', ip4: '192.168.40.11', ip6: '' }],
+       nodes: [{ id: 'test-node-1', name: 'node1', ip4: '192.168.40.11', ip6: '' }],
       resource_connect_info: {
         rds: {
           ...defaultWizardState.resource_connect_info.rds,
@@ -501,7 +501,7 @@ describe('validateWizardState', () => {
   it('requires internal mariadb and redis passwords in the service step', () => {
     const result = validateWizardState({
       ...defaultWizardState,
-      nodes: [{ name: 'node1', ip4: '192.168.40.11', ip6: '' }],
+       nodes: [{ id: 'test-node-1', name: 'node1', ip4: '192.168.40.11', ip6: '' }],
       resource_connect_info: {
         rds: {
           ...defaultWizardState.resource_connect_info.rds,

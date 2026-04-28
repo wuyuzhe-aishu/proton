@@ -36,6 +36,7 @@ const csAddons = [
 
 function createNode(index: number) {
   return {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
     name: `node${index + 1}`,
     ip4: '',
     ip6: '',
@@ -335,7 +336,22 @@ function NodeStep({
   state: WizardState
   setState: Dispatch<SetStateAction<WizardState>>
 }) {
-  const canDelete = state.nodes.length > 1
+  // Ensure all nodes have stable ids
+  const nodesWithIds = state.nodes.map((node) => ({
+    ...node,
+    id: node.id ?? `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+  }))
+
+  // Sync back if any node was missing an id
+  if (nodesWithIds.some((node, idx) => node.id !== state.nodes[idx].id)) {
+    updateState(setState, (current) => ({
+      ...current,
+      nodes: nodesWithIds,
+    }))
+    return null
+  }
+
+  const canDelete = nodesWithIds.length > 1
 
   function addNode() {
     updateState(setState, (current) => ({
@@ -344,41 +360,43 @@ function NodeStep({
     }))
   }
 
-  function updateNodeField(index: number, field: 'name' | 'ip4' | 'ip6', value: string) {
-    updateState(setState, (current) => {
-      const previousNode = current.nodes[index]
-      const nextNode = { ...previousNode, [field]: value }
-      const nodes = current.nodes.map((node, nodeIndex) => (nodeIndex === index ? nextNode : node))
-      const nextState = { ...current, nodes }
+   function updateNodeField(nodeId: string, field: 'name' | 'ip4' | 'ip6', value: string) {
+     updateState(setState, (current) => {
+       const previousNode = current.nodes.find((node) => node.id === nodeId)
+       if (!previousNode) return current
+       const nextNode = { ...previousNode, [field]: value }
+       const nodes = current.nodes.map((node) => (node.id === nodeId ? nextNode : node))
+       const nextState = { ...current, nodes }
 
-      if (field === 'name') {
-        return syncNodeReferences(nextState, previousNode.name, value)
-      }
+       if (field === 'name') {
+         return syncNodeReferences(nextState, previousNode.name, value)
+       }
 
-      return nextState
-    })
-  }
+       return nextState
+     })
+   }
 
-  function removeNode(index: number) {
-    updateState(setState, (current) => {
-      if (current.nodes.length <= 1) {
-        return current
-      }
+   function removeNode(nodeId: string) {
+     updateState(setState, (current) => {
+       if (current.nodes.length <= 1) {
+         return current
+       }
 
-      const removedNode = current.nodes[index]
-      const nodes = current.nodes.filter((_, nodeIndex) => nodeIndex !== index)
-      const fallbackName = nodes[0]?.name
+       const removedNode = current.nodes.find((node) => node.id === nodeId)
+       if (!removedNode) return current
+       const nodes = current.nodes.filter((node) => node.id !== nodeId)
+       const fallbackName = nodes[0]?.name
 
-      return detachNodeReferences(
-        {
-          ...current,
-          nodes,
-        },
-        removedNode.name,
-        fallbackName,
-      )
-    })
-  }
+       return detachNodeReferences(
+         {
+           ...current,
+           nodes,
+         },
+         removedNode.name,
+         fallbackName,
+       )
+     })
+   }
 
   return (
     <div className="legacy-stack">
@@ -463,15 +481,15 @@ function NodeStep({
             </div>
           </div>
           <div className="legacy-node-table__body" role="rowgroup">
-            {state.nodes.map((node, index) => (
-              <div key={`${index}-${node.name}`} className="legacy-node-table__row" role="row">
+            {nodesWithIds.map((node) => (
+              <div key={node.id} className="legacy-node-table__row" role="row">
                 <div role="cell">
                   <label className="legacy-node-cell">
                     <span className="legacy-sr-only">节点名称</span>
                     <input
                       aria-label="节点名称"
                       value={node.name}
-                      onChange={(event) => updateNodeField(index, 'name', event.target.value)}
+                      onChange={(event) => updateNodeField(node.id, 'name', event.target.value)}
                     />
                   </label>
                 </div>
@@ -481,7 +499,7 @@ function NodeStep({
                     <input
                       aria-label="Node IPv4"
                       value={node.ip4}
-                      onChange={(event) => updateNodeField(index, 'ip4', event.target.value)}
+                      onChange={(event) => updateNodeField(node.id, 'ip4', event.target.value)}
                     />
                   </label>
                 </div>
@@ -491,12 +509,12 @@ function NodeStep({
                     <input
                       aria-label="IPv6地址"
                       value={node.ip6}
-                      onChange={(event) => updateNodeField(index, 'ip6', event.target.value)}
+                      onChange={(event) => updateNodeField(node.id, 'ip6', event.target.value)}
                     />
                   </label>
                 </div>
                 <div role="cell">
-                  <button type="button" className="legacy-link-button" onClick={() => removeNode(index)} disabled={!canDelete}>
+                  <button type="button" className="legacy-link-button" onClick={() => removeNode(node.id)} disabled={!canDelete}>
                     删除
                   </button>
                 </div>

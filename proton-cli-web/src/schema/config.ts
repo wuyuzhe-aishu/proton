@@ -10,6 +10,7 @@ export type RedisConnectType =
 export type MQType = 'kafka' | 'nsq' | 'tonglink' | 'htp20' | 'htp202' | 'bmq' | ''
 
 export interface NodeFormValue {
+  id: string
   name: string
   ip4: string
   ip6: string
