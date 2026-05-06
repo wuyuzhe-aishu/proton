@@ -43,7 +43,6 @@ func TestLoadFromFile(t *testing.T) {
 					},
 					Ha_port:           8443,
 					Etcd_data_dir:     "/sysvol/proton_data/cs_etcd_data",
-					Docker_data_dir:   "/sysvol/proton_data/cs_docker_data",
 					Cs_controller_dir: "./service-package",
 				},
 				Cr: &Cr{

@@ -56,7 +56,7 @@ const ChronyConfPath = "/etc/chrony.conf"
 const ClusterDataPath = "/sysvol"
 const HelmRepo = "helm_repos"
 const K8SAdminConfPath = "/etc/kubernetes/admin.conf"
-const DockerConfigPath = "/etc/docker/daemon.json"
+
 const KubeletMaxPods = 256
 const KubeletEvictNodefsAva = "5%"
 const RootHomeDir = "/root"

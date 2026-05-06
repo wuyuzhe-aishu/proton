@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -209,84 +208,12 @@ func (n *Node) InitOS() error {
 
 func (n *Node) InitialContainerRuntime(s *configuration.ContainerRuntimeSource) (err error) {
 	switch {
-	case s.Docker != nil:
-		err = n.InitDocker(s.Docker)
 	case s.Containerd != nil:
 		err = n.InitContainerd(s.Containerd)
 	default:
 		err = fmt.Errorf("unsupported container runtime source: %v", s)
 	}
 	return
-}
-
-// func (n *Node) InitDocker(BIP, DockerDataDir string, InsecureRegistries []string) error {
-func (n *Node) InitDocker(s *configuration.DockerContainerRuntimeSource) error {
-	var ctx = context.TODO()
-	var executor = exec.NewECMSExecutorForHost(n.ECMS.Exec())
-	n.Logger.Printf("%s: setting docker", n.Ipaddress)
-	var dockerCfg DockerConfig
-	dockerCfg.Bip = s.BIP
-	dockerCfg.DataRoot = s.DataDir
-	dockerCfg.DefaultUlimits = DefaultUlimits{
-		"as": Ulimit{
-			Hard: -1,
-			Name: "as",
-			Soft: -1,
-		},
-		"cpu": Ulimit{
-			Hard: -1,
-			Name: "cpu",
-			Soft: -1,
-		},
-		"memlock": Ulimit{
-			Hard: -1,
-			Name: "memlock",
-			Soft: -1,
-		},
-		"nofile": Ulimit{
-			Hard: 1048576,
-			Name: "nofile",
-			Soft: 1048576,
-		},
-		"nproc": Ulimit{
-			Hard: -1,
-			Name: "nproc",
-			Soft: -1,
-		},
-	}
-	dockerCfg.ExecOpts = []string{"native.cgroupdriver=systemd"}
-	dockerCfg.InsecureRegistries = s.InsecureRegistries
-	dockerCfg.LogDriver = "json-file"
-	dockerCfg.LogOpts.MaxFile = "3"
-	dockerCfg.LogOpts.MaxSize = "10m"
-	dockerCfg.MaxConcurrentDownloads = 1000
-	dockerCfg.MaxConcurrentUploads = 1000
-	if checkNvidiaRuntimeAviable(executor) {
-		n.Logger.Infoln("nvidia runtime aviable, set docker config")
-		dockerCfg = setDockerConfigNvidiaRuntime(dockerCfg)
-	} else {
-		n.Logger.Infoln("nvidia runtime not aviable, skip set docker config")
-	}
-
-	if err := n.ECMS.Files().Create(ctx, "/etc/docker", true, nil); err != nil && err != os.ErrExist {
-		return fmt.Errorf("%s: failed to create /etc/docker: %v", n.Ipaddress, err)
-	}
-	dockerJSON, err := json.MarshalIndent(dockerCfg, "", "    ")
-	if err != nil {
-		return fmt.Errorf("%s: failed to marshal docker config: %v", n.Ipaddress, err)
-	}
-	if err := n.ECMS.Files().Create(ctx, "/etc/docker/daemon.json", false, dockerJSON); err != nil {
-		return fmt.Errorf("%s: failed to write /etc/docker/daemon.json: %v", n.Ipaddress, err)
-	}
-
-	n.Logger.Printf("%s: restarting docker", n.Ipaddress)
-	if err := executor.Command("systemctl", "enable", "docker.socket").Run(); err != nil {
-		return fmt.Errorf("%s: failed to restart docker: %v", n.Ipaddress, err)
-	}
-	if err := executor.Command("systemctl", "restart", "docker.socket").Run(); err != nil {
-		return fmt.Errorf("%s: failed to restart docker: %v", n.Ipaddress, err)
-	}
-	return nil
 }
 
 func (n *Node) InitContainerd(s *configuration.ContainerdContainerRuntimeSource) error {

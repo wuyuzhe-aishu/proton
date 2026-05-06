@@ -235,12 +235,11 @@ func (c *Cs) apply() error {
 	}
 
 	kc := &k.KubernetesCluster{
-		Logger:        c.Logger,
-		BIP:           c.ClusterConf.Cs.Host_network.Bip,
-		DockerDataDir: c.ClusterConf.Cs.Docker_data_dir,
-		ETCDDataDir:   c.ClusterConf.Cs.Etcd_data_dir,
-		LoadBalancer:  fmt.Sprintf("proton-cs.lb.aishu.cn:%d", c.ClusterConf.Cs.Ha_port),
-		ChartRepo:     chartRepo,
+		Logger:      c.Logger,
+		BIP:         c.ClusterConf.Cs.Host_network.Bip,
+		ETCDDataDir: c.ClusterConf.Cs.Etcd_data_dir,
+		LoadBalancer: fmt.Sprintf("proton-cs.lb.aishu.cn:%d", c.ClusterConf.Cs.Ha_port),
+		ChartRepo:   chartRepo,
 		// 容器运行时
 		ContainerRuntime: &c.ClusterConf.Cs.ContainerRuntime,
 	}
@@ -269,12 +268,11 @@ func (c *Cs) apply() error {
 		if err != nil {
 			return err
 		}
-		generateContainerRuntimeSourceInto(r, &c.ClusterConf.Cs.ContainerRuntime, c.ClusterConf.Cr.Local, c.ClusterConf.Cs.Host_network.Bip, c.ClusterConf.Cs.Docker_data_dir)
-		// TODO: implement this
-		// c.ClusterConf.Cs.ContainerRuntime.Containerd = &configuration.ContainerdContainerRuntimeSource{
-		// 	Root:         "/sysvol/proton_data/cs_containerd_data",
-		// 	SandboxImage: "registry.aishu.cn:15000/public/pause:3.6",
-		// }
+		var containerdRoot string
+		if c.ClusterConf.Cs.ContainerRuntime.Containerd != nil {
+			containerdRoot = c.ClusterConf.Cs.ContainerRuntime.Containerd.Root
+		}
+		generateContainerRuntimeSourceInto(r, &c.ClusterConf.Cs.ContainerRuntime, c.ClusterConf.Cr.Local, containerdRoot)
 	}
 	c.Logger.WithField("container-runtime", c.ClusterConf.Cs.ContainerRuntime)
 
@@ -415,42 +413,9 @@ func (c *Cs) updateContainerRuntime(conf client.RemoteClientConf) error {
 			return err
 		}
 		return n.InitContainerd(c.ClusterConf.Cs.ContainerRuntime.Containerd)
-	case c.ClusterConf.Cs.ContainerRuntime.Docker != nil:
-		if c.ClusterConf.Cr.Local == nil {
-			return nil
-		}
-		return c.updateDockerDaemonConfig(conf, c.ClusterConf.Cr.Local.Hosts, strconv.Itoa(c.ClusterConf.Cr.Local.Ports.Registry))
-	// 未指定容器运行时，默认选择 docker 作为容器运行时
 	default:
-		if c.ClusterConf.Cr.Local == nil {
-			return nil
-		}
-		return c.updateDockerDaemonConfig(conf, c.ClusterConf.Cr.Local.Hosts, strconv.Itoa(c.ClusterConf.Cr.Local.Ports.Registry))
+		return nil
 	}
-}
-
-func (c *Cs) updateDockerDaemonConfig(conf client.RemoteClientConf, crHosts []string, port string) error {
-	var ctx = context.TODO()
-	var e = exec_v1alpha1.NewECMSExecutorForHost(ecms.NewForHost(conf.Host).Exec())
-	var f = ecms.NewForHost(conf.Host).Files()
-	cfgContent, err := f.ReadFile(ctx, global.DockerConfigPath)
-	if err != nil {
-		return err
-	}
-	CfgContentNew, err := addDockerConfigInsecureHost(crHosts, port, cfgContent)
-	if err != nil {
-		return err
-	}
-
-	if err := f.Create(ctx, global.DockerConfigPath, false, CfgContentNew); err != nil {
-		return err
-	}
-	cmd := "systemctl reload docker"
-	c.Logger.Info("run cmd ", cmd)
-	if err := e.Command("systemctl", "reload", "docker").Run(); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (c *Cs) setKubeletConfigMap(kube kubernetes.Interface) error {
@@ -1157,11 +1122,10 @@ func IsControlPlaneChanged(new, old []string) bool {
 	return false
 }
 
-// DetectNodeCommonCRISocket 探查所有节点都有的容器运行时，存在多个是按优先级返回。
-//  1. CRISocketDocker
-//  2. CRISocketContainerd
+// DetectNodeCommonCRISocket 探查所有节点都有的容器运行时
 func DetectNodeCommonCRISocket(nodes []k.Node) (string, error) {
 	var found = sets.New[string]()
+
 	for _, n := range nodes {
 		sockets, err := detectNodeCRISockets(&n)
 		if err != nil {
@@ -1170,13 +1134,8 @@ func DetectNodeCommonCRISocket(nodes []k.Node) (string, error) {
 		found.Insert(sockets...)
 	}
 
-	for _, s := range []string{
-		constants.CRISocketDockerShim,
-		constants.CRISocketContainerd,
-	} {
-		if found.Has(s) {
-			return s, nil
-		}
+	if found.Has(constants.CRISocketContainerd) {
+		return constants.CRISocketContainerd, nil
 	}
 
 	return "", fmt.Errorf("CRISocket not found")
@@ -1185,17 +1144,12 @@ func DetectNodeCommonCRISocket(nodes []k.Node) (string, error) {
 // detectNodeCRISockets 探查节点的容器运行时，返回已知的容器运行时列表。
 func detectNodeCRISockets(n *k.Node) ([]string, error) {
 	var found []string
-	for _, s := range []string{
-		constants.CRISocketDockerShim,
-		constants.CRISocketContainerd,
-	} {
-		ok, err := isNodeExistingSocket(n.ECMS.Files(), s)
-		if err != nil {
-			return nil, err
-		}
-		if ok {
-			found = append(found, s)
-		}
+	ok, err := isNodeExistingSocket(n.ECMS.Files(), constants.CRISocketContainerd)
+	if err != nil {
+		return nil, err
+	}
+	if ok {
+		found = append(found, constants.CRISocketContainerd)
 	}
 	return found, nil
 }

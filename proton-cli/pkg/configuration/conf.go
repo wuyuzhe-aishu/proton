@@ -142,7 +142,6 @@ type Cs struct {
 	Host_network      *HostNetWork `json:"host_network"`
 	Ha_port           int          `json:"ha_port"`
 	Etcd_data_dir     string       `json:"etcd_data_dir"`
-	Docker_data_dir   string       `json:"docker_data_dir"`
 	Cs_controller_dir string       `json:"cs_controller_dir"`
 	// Proton CS 坯用的杒件列表, 因为需覝区分 `nil` 和 `[]` 所以丝能使用
 	// omitempty
@@ -162,7 +161,6 @@ type CSAddonIngressNginxConfig struct {
 // Kubernetes 的容器运行时，有且只有一个运行时
 type ContainerRuntimeSource struct {
 	Containerd *ContainerdContainerRuntimeSource `json:"containerd,omitzero"`
-	Docker     *DockerContainerRuntimeSource     `json:"docker,omitzero"`
 }
 
 // 容器运行时 containerd
@@ -222,16 +220,6 @@ type RegistryHostFileConfig struct {
 	OverridePath bool `toml:"override_path" json:"override_path,omitzero"`
 
 	// TODO: Credentials: helper? name? username? alternate domain? token?
-}
-
-// 容器运行时 docker
-type DockerContainerRuntimeSource struct {
-	// 数据目录
-	DataDir string `json:"data_dir,omitzero"`
-	// Bridge IP
-	BIP string `json:"bip,omitzero"`
-	// Insecure registries
-	InsecureRegistries []string `json:"insecure_registries,omitzero"`
 }
 
 type Chrony struct {

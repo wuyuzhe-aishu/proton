@@ -16,7 +16,6 @@ Cr:
     Storage: /sysvol/proton_data/cr_data
 Cs:
   Cs_controller_dir: ./service-package
-  Docker_data_dir: /sysvol/proton_data/cs_docker_data
   Etcd_data_dir: /sysvol/proton_data/cs_etcd_data
   Ha_port: 8443
   Host_network:

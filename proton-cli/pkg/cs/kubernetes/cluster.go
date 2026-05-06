@@ -27,7 +27,6 @@ type KubernetesCluster struct {
 	ChartRepo          *ChartmuseumInfo
 	BIP                string
 	Identify           string
-	DockerDataDir      string
 	InsecureRegistries []string
 	ETCDDataDir        string
 	LoadBalancer       string
@@ -337,9 +336,6 @@ func (kc *KubernetesCluster) logErr(err error, ip string, action string) {
 
 func getCRISocketFromContainerRuntimeSource(s *configuration.ContainerRuntimeSource) (socket string, err error) {
 	switch {
-	case s.Docker != nil:
-		// dockershim.sock 由 kubelet 提供。kubeadm init 时不可以指定
-		// criSocket，由 kubeadm 自动探查。
 	case s.Containerd != nil:
 		socket = constants.CRISocketContainerd
 	default:

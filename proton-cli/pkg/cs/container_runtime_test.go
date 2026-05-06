@@ -16,11 +16,6 @@ func TestRuntimePackageNames(t *testing.T) {
 			runtime: nodeContainerRuntimeContainerd,
 			want:    []string{"containerd", "containerd.io"},
 		},
-		{
-			name:    "docker keeps docker ce package name",
-			runtime: nodeContainerRuntimeDocker,
-			want:    []string{"docker-ce"},
-		},
 	}
 
 	for _, tt := range tests {

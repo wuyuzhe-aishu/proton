@@ -12,14 +12,3 @@ func checkNvidiaRuntimeAviable(e exec.Executor) bool {
 		return len(output) > 0
 	}
 }
-
-func setDockerConfigNvidiaRuntime(cfg DockerConfig) DockerConfig {
-	cfg.DefaultRuntime = "nvidia"
-	cfg.Runtimes = map[string]any{
-		"nvidia": map[string]any{
-			"args": []any{},
-			"path": "nvidia-container-runtime",
-		},
-	}
-	return cfg
-}

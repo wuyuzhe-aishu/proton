@@ -31,7 +31,7 @@ export const defaultWizardState: WizardState = {
         ipv6_interface: '',
       },
       etcd_data_dir: '/sysvol/proton_data/cs_etcd_data',
-      docker_data_dir: '/sysvol/proton_data/cs_docker_data',
+      containerd_data_dir: '/sysvol/proton_data/cs_containerd_data',
     },
     managed: {
       namespace: '',

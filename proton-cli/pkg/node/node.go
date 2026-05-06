@@ -159,48 +159,6 @@ func (n *Node) setNode(conf client.RemoteClientConf) error {
 		return fmt.Errorf("update remote host %s proton sysctl file failed: %w", conf.Host, err)
 	}
 
-	//docker 配置变更
-	n.Logger.Info(fmt.Sprintf("update node %s proton docker", conf.Host))
-	if n.OldClusterConf != nil && len(n.OldClusterConf.Nodes) != 0 {
-		if n.ClusterConf.Cs.Docker_data_dir != n.OldClusterConf.Cs.Docker_data_dir ||
-			n.ClusterConf.Cs.Host_network.Bip != n.OldClusterConf.Cs.Host_network.Bip {
-			var param string
-			if n.ClusterConf.Cs.Host_network.Bip != n.OldClusterConf.Cs.Host_network.Bip {
-				param += fmt.Sprintf(" --bip=%s ", n.ClusterConf.Cs.Host_network.Bip)
-			}
-
-			if n.ClusterConf.Cs.Docker_data_dir != n.OldClusterConf.Cs.Docker_data_dir {
-				if err := ecmsV1Alpha1.Files().Create(ctx, n.ClusterConf.Cs.Docker_data_dir, true, nil); err != nil {
-					return err
-				}
-				// copy docker data from current DockerRootDir to expect DockerRootDir if current DockerRootDir exists
-				n.Logger.Debugf("cp docker data path %s to %s on %s", n.OldClusterConf.Cs.Docker_data_dir, n.ClusterConf.Cs.Docker_data_dir, conf.Host)
-				changePathCmd := fmt.Sprintf(`if [[ -d %s && "$(ls %s |wc -w)" > 0 ]]; then cp --preserve=all --recursive --target-directory=%s %s/*; fi`,
-					n.OldClusterConf.Cs.Docker_data_dir,
-					n.OldClusterConf.Cs.Docker_data_dir,
-					n.ClusterConf.Cs.Docker_data_dir,
-					n.OldClusterConf.Cs.Docker_data_dir)
-				n.Logger.Debugf("run cmd [%s]", changePathCmd)
-				if err := executor.Command("bash", "-c", changePathCmd).Run(); err != nil {
-					return fmt.Errorf("cp docker data path %s to %s failed on node %s", n.OldClusterConf.Cs.Docker_data_dir, n.ClusterConf.Cs.Docker_data_dir, conf.Host)
-				}
-				param += fmt.Sprintf(" --data-root=%s ", n.ClusterConf.Cs.Docker_data_dir)
-			}
-			cmd := "python /usr/bin/kubesuite-set-docker" + param
-			n.Logger.Debugf("run cmd [%s]", cmd)
-			if err := executor.Command("bash", "-c", cmd).Run(); err != nil {
-				return err
-			}
-			//wait master
-			if conf.HostName == n.ClusterConf.Cs.Master[0] {
-				waitMasterCmd := "while ! kubectl cluster-info > /dev/null 2>&1; do sleep 1; done"
-				if err := executor.Command("bash", "-c", waitMasterCmd).Run(); err != nil {
-					return err
-				}
-			}
-		}
-	}
-
 	// k8s 配置更新 放在slb更新前更新否则无法连接apiserver
 	n.Logger.Info(fmt.Sprintf("update node %s proton k8s", conf.Host))
 	var kubeCluster *configuration.ClusterConfiguration

@@ -918,7 +918,7 @@ func RecoverResource(opt RecoverOpts, conf *RecoverConf, fo *RecoverInfo) error 
 				etcd.SnapshotRestoreCommandFunc(filepath.Join(RecoverLogDir, opt.Id+".log"), initial_cluster, "", destpath, "", initial_advertise_peer_urls, name, false, []string{etcdSnapshotPath})
 				Recoverlog.Info("recover kubernetes-etcd success")
 				time.Sleep(10 * time.Second)
-				// 所有集群中的节点重启docker和kubelet
+				// 所有集群中的节点重启kubelet
 				err = restartNodesService(clusterConf.Nodes)
 				if err != nil {
 					return err
@@ -1001,24 +1001,12 @@ func RecoverResource(opt RecoverOpts, conf *RecoverConf, fo *RecoverInfo) error 
 				}
 			case "firewalld":
 				//还原配置之后，配置firewalld服务
-				if _, err := shellcommand.RunCommand("firewall-cmd", "--zone=docker", "--change-interface=docker0"); err != nil {
-					errList = append(errList, fmt.Errorf("%s: %w", info.Name, err))
-				}
 				if _, err := shellcommand.RunCommand("systemctl", "restart", "firewalld"); err != nil {
 					errList = append(errList, fmt.Errorf("%s: %w", info.Name, err))
 				}
 				if _, err := shellcommand.RunCommand("systemctl", "enable", "firewalld"); err != nil {
 					errList = append(errList, fmt.Errorf("%s: %w", info.Name, err))
 				}
-			case "docker":
-				//还原配置之后，配置docker服务
-				if _, err := shellcommand.RunCommand("systemctl", "restart", "docker"); err != nil {
-					errList = append(errList, fmt.Errorf("%s: %w", info.Name, err))
-				}
-				if _, err := shellcommand.RunCommand("systemctl", "enable", "docker"); err != nil {
-					errList = append(errList, fmt.Errorf("%s: %w", info.Name, err))
-				}
-				time.Sleep(time.Second * 120)
 			case "network":
 				//还原配置之后，配置network服务
 				if _, err := shellcommand.RunCommand("/bin/bash", "-c", `if [[ $(systemctl list-units --type service  | grep network.service | wc -l)  -gt 0   ]] && [[ $(systemctl is-active network.service) = active ]]; then systemctl restart network; fi`); err != nil {
@@ -1137,7 +1125,7 @@ func RecoverResource(opt RecoverOpts, conf *RecoverConf, fo *RecoverInfo) error 
 	return nil
 }
 
-// /重启集群中每个节点的docker和kubelet服务
+// 重启集群中每个节点的kubelet服务
 func restartNodesService(hosts []configuration.Node) error {
 	var wg sync.WaitGroup
 	var errList []error
@@ -1157,16 +1145,16 @@ func restartNodesService(hosts []configuration.Node) error {
 		wg.Add(1)
 		go func(conf client.RemoteClientConf) {
 			defer wg.Done()
-			Recoverlog.Info(fmt.Sprintf("restart docker kubelet on node:%s", conf.Host))
-			if err := executor.Command("systemctl", "restart", "docker", "kubelet").Run(); err != nil {
-				errList = append(errList, fmt.Errorf("restart docker kubelet on node  %s fail: %w", sshConf.HostName, err))
+			Recoverlog.Info(fmt.Sprintf("restart kubelet on node:%s", conf.Host))
+			if err := executor.Command("systemctl", "restart", "kubelet").Run(); err != nil {
+				errList = append(errList, fmt.Errorf("restart kubelet on node  %s fail: %w", sshConf.HostName, err))
 				return
 			}
-			if err := executor.Command("systemctl", "enable", "docker", "kubelet").Run(); err != nil {
-				errList = append(errList, fmt.Errorf("enable docker kubelet on node  %s fail: %w", sshConf.HostName, err))
+			if err := executor.Command("systemctl", "enable", "kubelet").Run(); err != nil {
+				errList = append(errList, fmt.Errorf("enable kubelet on node  %s fail: %w", sshConf.HostName, err))
 				return
 			}
-			Recoverlog.Info(fmt.Sprintf("restart docker kubelet on node:%s,success", conf.Host))
+			Recoverlog.Info(fmt.Sprintf("restart kubelet on node:%s,success", conf.Host))
 		}(sshConf)
 	}
 	wg.Wait()

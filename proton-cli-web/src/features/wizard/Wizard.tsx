@@ -715,9 +715,9 @@ function NetworkStep({
               />
             </label>
             <label>
-              <span>docker 数据路径</span>
+              <span>containerd 数据路径</span>
               <input
-                value={state.cs.local.docker_data_dir}
+                value={state.cs.local.containerd_data_dir}
                 onChange={(event) =>
                   updateState(setState, (current) => ({
                     ...current,
@@ -725,7 +725,7 @@ function NetworkStep({
                       ...current.cs,
                       local: {
                         ...current.cs.local,
-                        docker_data_dir: event.target.value,
+                        containerd_data_dir: event.target.value,
                       },
                     },
                   }))

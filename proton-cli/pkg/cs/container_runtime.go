@@ -16,14 +16,7 @@ import (
 
 // isSpecifiedContainerRuntimeSource 返回是否指定了容器运行时
 func isSpecifiedContainerRuntimeSource(s *configuration.ContainerRuntimeSource) bool {
-	switch {
-	case s.Containerd != nil:
-		return true
-	case s.Docker != nil:
-		return true
-	default:
-		return false
-	}
+	return s.Containerd != nil
 }
 
 // 用于标识节点已拥有的容器运行时
@@ -32,24 +25,18 @@ type nodeContainerRuntime string
 const (
 	// containerd
 	nodeContainerRuntimeContainerd nodeContainerRuntime = "containerd"
-	// docker
-	nodeContainerRuntimeDocker nodeContainerRuntime = "docker"
 )
 
 func runtimePackageNames(r nodeContainerRuntime) []string {
 	switch r {
 	case nodeContainerRuntimeContainerd:
 		return []string{"containerd", "containerd.io"}
-	case nodeContainerRuntimeDocker:
-		return []string{"docker-ce"}
 	default:
 		return nil
 	}
 }
 
-// detectNodeCommonContainerRuntime 探查所有节点共有的容器运行时。如果存在多个，按以下顺序返回：
-//  1. docker
-//  2. containerd
+// detectNodeCommonContainerRuntime 探查所有节点共有的容器运行时
 func detectNodeCommonContainerRuntime(kc *k.KubernetesCluster) (nodeContainerRuntime, error) {
 	// found container runtimes
 	found := sets.New[nodeContainerRuntime]()
@@ -62,48 +49,39 @@ func detectNodeCommonContainerRuntime(kc *k.KubernetesCluster) (nodeContainerRun
 		found.Insert(runtimes...)
 	}
 
-	for _, r := range []nodeContainerRuntime{
-		nodeContainerRuntimeDocker,
-		nodeContainerRuntimeContainerd,
-	} {
-		if found.Has(r) {
-			return r, nil
-		}
+	if found.Has(nodeContainerRuntimeContainerd) {
+		return nodeContainerRuntimeContainerd, nil
 	}
 
 	return "", errors.New("container runtime not found")
 }
 
 func detectNodeContainerRuntimes(n *k.Node) (runtimes []nodeContainerRuntime, err error) {
-	for _, runtime := range []nodeContainerRuntime{
-		nodeContainerRuntimeContainerd,
-		nodeContainerRuntimeDocker,
-	} {
-		for _, pkg := range runtimePackageNames(runtime) {
-			if _, err := n.Query(pkg); err != nil {
-				continue
-			}
-			runtimes = append(runtimes, runtime)
-			break
+	for _, pkg := range runtimePackageNames(nodeContainerRuntimeContainerd) {
+		if _, err := n.Query(pkg); err != nil {
+			continue
 		}
+		runtimes = append(runtimes, nodeContainerRuntimeContainerd)
+		break
 	}
 	return
 }
 
-func generateContainerRuntimeSourceInto(r nodeContainerRuntime, target *configuration.ContainerRuntimeSource, localCR *configuration.LocalCR, bip string, dockerDataDir string) {
+func generateContainerRuntimeSourceInto(r nodeContainerRuntime, target *configuration.ContainerRuntimeSource, localCR *configuration.LocalCR, containerdRoot string) {
 	switch r {
 	case nodeContainerRuntimeContainerd:
-		target.Containerd = generateContainerdContainerRuntimeSource(localCR)
-	case nodeContainerRuntimeDocker:
-		target.Docker = generateDockerContainerRuntimeSource(localCR, bip, dockerDataDir)
+		target.Containerd = generateContainerdContainerRuntimeSource(localCR, containerdRoot)
 	default:
 		return
 	}
 }
 
-func generateContainerdContainerRuntimeSource(localCR *configuration.LocalCR) *configuration.ContainerdContainerRuntimeSource {
+func generateContainerdContainerRuntimeSource(localCR *configuration.LocalCR, root string) *configuration.ContainerdContainerRuntimeSource {
+	if root == "" {
+		root = "/var/lib/containerd"
+	}
 	s := &configuration.ContainerdContainerRuntimeSource{
-		Root: "/var/lib/containerd",
+		Root: root,
 		// TODO: generate structurally
 		SandboxImage: fmt.Sprintf("%s/pause:3.10.1", net.JoinHostPort(global.RegistryDomain, strconv.Itoa(localCR.Ha_ports.Registry))),
 	}
@@ -137,16 +115,4 @@ func generateContainerdRegistryHostConfig(host string) configuration.RegistryHos
 	}
 }
 
-func generateDockerContainerRuntimeSource(localCR *configuration.LocalCR, bip string, dockerDataDir string) *configuration.DockerContainerRuntimeSource {
-	var registry []string
-	registry = append(registry, net.JoinHostPort(global.RegistryDomain, strconv.Itoa(localCR.Ha_ports.Registry)))
-	for _, h := range localCR.Hosts {
-		registry = append(registry, net.JoinHostPort(h, strconv.Itoa(localCR.Ports.Registry)))
-	}
 
-	return &configuration.DockerContainerRuntimeSource{
-		DataDir:            dockerDataDir,
-		BIP:                bip,
-		InsecureRegistries: registry,
-	}
-}

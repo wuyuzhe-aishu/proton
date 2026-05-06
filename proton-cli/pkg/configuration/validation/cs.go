@@ -42,7 +42,6 @@ func ValidateCS(c *configuration.Cs, nodes []configuration.Node, fldPath *field.
 	allErrs = append(allErrs, ValidateCSAddonsConfig(c.AddonsConfig, fldPath.Child("addonsConfig"))...)
 	allErrs = append(allErrs, ValidateCS_DualStack(c.IPFamilies, c.EnableDualStack, fldPath.Child("ipFamilies"))...)
 
-	// TODO: validate container runtime docker
 	return
 }
 

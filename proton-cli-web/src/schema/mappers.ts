@@ -197,12 +197,17 @@ export function toSubmitConfig(state: WizardState): SubmitConfig {
     firewall: {
       mode: state.firewall.mode,
     },
-    cs: isLocal
-      ? {
-          provisioner: 'local',
-          ...cleanCSConfig(state.cs.local),
-        }
-      : {
+  cs: isLocal
+    ? {
+        provisioner: 'local',
+        container_runtime: {
+          containerd: {
+            root: state.cs.local.containerd_data_dir,
+          },
+        },
+        ...cleanCSConfig(state.cs.local),
+      }
+    : {
           provisioner: 'external',
           ...cleanCSConfig(state.cs.managed),
         },

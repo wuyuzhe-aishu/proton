@@ -76,7 +76,6 @@ cs:
     #ipv6_interface: ens160                        # ipv6 ip所在网卡名称 部署双栈时需要指定
   cs_controller_dir: ./service-package
   etcd_data_dir: /sysvol/proton_data/cs_etcd_data
-  docker_data_dir: /sysvol/proton_data/cs_docker_data
   addons:
     - ingress-nginx
   addonsConfig:

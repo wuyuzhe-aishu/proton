@@ -34,7 +34,7 @@ export interface LocalCsFormValue {
     ipv6_interface: string
   }
   etcd_data_dir: string
-  docker_data_dir: string
+  containerd_data_dir: string
 }
 
 export interface ManagedCsFormValue {
