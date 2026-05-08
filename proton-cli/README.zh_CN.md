@@ -4,6 +4,14 @@
 
 本 README 基于当前目录中已经提交到仓库的源代码编写，重点说明 CLI 的使用方式，不假设仓库之外还存在其他未纳入版本控制的打包产物。
 
+## 💬 交流社区
+
+<div align="center">
+<img src="./docs/qrcode.png" alt="KWeaver 交流群二维码" width="30%"/>
+
+扫码加入 KWeaver 交流群，联系群主获取 Kweaver 离线安装包
+</div>
+
 ## 快速开始
 
 ### 操作系统兼容性

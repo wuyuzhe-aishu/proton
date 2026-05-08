@@ -4,6 +4,14 @@
 
 This README is written from the committed source code in this directory. It focuses on how to use the CLI, not on packaging artifacts that may exist outside the tracked code.
 
+## 💬 Community
+
+<div align="center">
+<img src="./docs/qrcode.png" alt="KWeaver Community QR Code" width="30%"/>
+
+Scan the QR code to join the KWeaver community and contact the group owner to obtain the Kweaver offline installation package
+</div>
+
 ## Quick Start
 
 ### OS Compatibility
