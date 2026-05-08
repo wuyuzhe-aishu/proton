@@ -14,7 +14,7 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kweaver-ai/proton/ecms-go/internal/response"
+	"github.com/kweaver-ai/proton/ecms/internal/response"
 )
 
 type FileHandler struct{}

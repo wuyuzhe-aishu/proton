@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kweaver-ai/proton/ecms-go/internal/handler"
-	"github.com/kweaver-ai/proton/ecms-go/internal/middleware"
+	"github.com/kweaver-ai/proton/ecms/internal/handler"
+	"github.com/kweaver-ai/proton/ecms/internal/middleware"
 )
 
 func main() {

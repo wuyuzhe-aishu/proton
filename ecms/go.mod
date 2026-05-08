@@ -1,4 +1,4 @@
-module github.com/kweaver-ai/proton/ecms-go
+module github.com/kweaver-ai/proton/ecms
 
 go 1.26.2
 
