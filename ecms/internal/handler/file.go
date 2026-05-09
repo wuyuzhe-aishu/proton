@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"io"
-	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -309,7 +308,6 @@ func (h *FileHandler) setFilePath(c *gin.Context) {
 		return
 	}
 	p = "/" + p
-	log.Println("file path:", p)
 	c.Set(contextKeyFilePath, p)
 }
 func (h *FileHandler) getFilePath(c *gin.Context) string {
