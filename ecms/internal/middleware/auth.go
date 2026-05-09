@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/netip"
 	"strings"
 	"time"
 
@@ -14,6 +15,16 @@ import (
 
 func SimpleAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		addr, err := netip.ParseAddr(c.ClientIP())
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		if addr.IsLoopback() {
+			log.Printf("SimpleAuth: skipping auth for loopback address %v", addr)
+			return
+		}
+
 		log.Printf("SimpleAuth: path=%s, method=%s", c.Request.URL.Path, c.Request.Method)
 
 		authHeader := c.GetHeader("Authorization")
@@ -62,7 +73,6 @@ func SimpleAuth() gin.HandlerFunc {
 
 		log.Printf("SimpleAuth: auth success")
 		c.Set("username", username)
-		c.Next()
 	}
 }
 
