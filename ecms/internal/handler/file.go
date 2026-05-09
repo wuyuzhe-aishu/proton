@@ -141,7 +141,15 @@ func (h *FileHandler) get(c *gin.Context) {
 		mimeType = "application/octet-stream"
 	}
 	c.Header("Content-Type", mimeType)
-	c.File(filePath)
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		response.Error(c, 500, 500000000, "server error", err.Error())
+		return
+	}
+	defer f.Close()
+
+	io.Copy(c.Writer, f)
 }
 
 func (h *FileHandler) put(c *gin.Context) {
