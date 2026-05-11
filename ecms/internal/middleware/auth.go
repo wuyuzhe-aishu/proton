@@ -82,8 +82,8 @@ func validatePassword(username, password string) bool {
 
 	log.Printf("validatePassword: username=%s, password=%s, now=%d, epochMin=%d", username, password, now, epochMin)
 
-	for i := -300; i <= 300; i += 60 {
-		epoch := epochMin + int64(i)
+	for _, offset := range []int64{0, -1, 1} {
+		epoch := epochMin + 60*offset
 		want := generateToken(username, epoch)
 		log.Printf("validatePassword: checking epoch=%d, want=%s, match=%v", epoch, want, password == want)
 		if password == want {
