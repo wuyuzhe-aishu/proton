@@ -86,7 +86,7 @@ homepage: https://github.com/kweaver-ai/proton
 # This can be binaries or any other files.
 contents:
   # Binaries
-  - src: bin/ecms
+  - src: ecms
     dst: /usr/bin/ecms
   # Libraries
   - src: ecms.service
