@@ -1,0 +1,130 @@
+# Name. (required)
+name: ecms
+
+# Architecture. (required)
+# This will expand any env var you set in the field, e.g. arch: ${GOARCH}
+# The architecture is specified using Go nomenclature (GOARCH) and translated
+# to the platform specific equivalent. In order to manually set the architecture
+# to a platform specific value, set `{format}.arch`.
+# Examples: `all`, `amd64`, `386`, `arm5`, `arm6`, `arm7`, `arm64`, `mips`,
+# `mipsle`, `mips64le`, `ppc64le`, `s390`
+arch: ${ARCH}
+
+# Platform.
+# This will expand any env var you set in the field, e.g. platform: ${GOOS}
+# This is only used by the rpm and deb packagers.
+# Examples: `linux` (default), `darwin`
+platform: linux
+
+# Version. (required)
+# This will expand any env var you set in the field, e.g. version: ${SEMVER}
+# Some package managers, like deb, require the version to start with a digit.
+# Hence, you should not prefix the version with 'v'.
+version: ${VERSION}
+
+# Version Schema allows you to specify how to parse the version string.
+# Default is `semver`
+#   `semver` attempt to parse the version string as a valid semver version.
+#       The parser is lenient; it will strip a `v` prefix and will accept
+#       versions with fewer than 3 components, like `v1.2`.
+#       If parsing succeeds, then the version will be molded into a format
+#       compatible with the specific packager used.
+#       If parsing fails, then the version is used as-is.
+#   `none` skip trying to parse the version string and just use what is passed in
+# version_schema: semver
+
+# Version Epoch.
+# A package with a higher version epoch will always be considered newer.
+# See: https://www.debian.org/doc/debian-policy/ch-controlfields.html#epochs-should-be-used-sparingly
+epoch: "1"
+
+# Version Prerelease.
+# Default is extracted from `version` if it is semver compatible.
+# This is appended to the `version`, e.g. `1.2.3+beta1`. If the `version` is
+# semver compatible, then this replaces the prerelease component of the semver.
+# prerelease: alpha.0
+
+# Version Metadata (previously deb.metadata).
+# Default is extracted from `version` if it is semver compatible.
+# Setting metadata might interfere with version comparisons depending on the
+# packager. If the `version` is semver compatible, then this replaces the
+# version metadata component of the semver.
+# version_metadata: git
+
+# Version Release, aka revision.
+# This will expand any env var you set in the field, e.g. release: ${VERSION_RELEASE}
+# This is appended to the `version` after `prerelease`. This should be
+# incremented if you release an updated package of the same upstream version,
+# and it should reset to 1 when bumping the version.
+release: ${RELEASE}
+
+# Maintainer. (required)
+# This will expand any env var you set in the field, e.g. maintainer: ${GIT_COMMITTER_NAME} <${GIT_COMMITTER_EMAIL}>
+# Defaults to empty on rpm and apk
+# Leaving the 'maintainer' field unset will not be allowed in a future version
+maintainer: 吴毓喆（Bedivere） <wu.yuzhe@kweaver.ai>
+
+# Description.
+# This will expand any env var you set in the field, e.g. description: ${DESCRIPTION}
+# Defaults to `no description given`.
+# Most packagers call for a one-line synopsis of the package. Some (like deb)
+# also call for a multi-line description starting on the second line.
+description: ECMS Service
+
+# Vendor.
+# This will expand any env var you set in the field, e.g. vendor: ${VENDOR}
+# This is only used by the rpm packager.
+vendor: Proton
+
+# Package's homepage.
+# This will expand any env var you set in the field, e.g. homepage: ${CI_PROJECT_URL}
+homepage: https://github.com/kweaver-ai/proton
+
+# License.
+# license: MIT
+# Contents to add to the package
+# This can be binaries or any other files.
+contents:
+  # Binaries
+  - src: ecms
+    dst: /usr/bin/ecms
+  # Libraries
+  - src: ecms.service
+    dst: /usr/lib/systemd/system/ecms.service
+
+# Scripts to run at specific stages. (overridable)
+scripts:
+  # preinstall: scripts/preinstall.sh
+  postinstall: scripts/postinstall.sh
+  preremove: scripts/preremove.sh
+  postremove: scripts/postremove.sh
+
+# Custom configuration applied only to the RPM packager.
+rpm:
+  # The package group. This option is deprecated by most distros
+  # but required by old distros like CentOS 5 / EL 5 and earlier.
+  group: Applications/System
+
+  # The package summary. This is, by default, the first line of the
+  # description, but can be explicitly provided here.
+  summary: ECMS Service
+
+  # The packager is used to identify the organization that actually packaged
+  # the software, as opposed to the author of the software.
+  # `maintainer` will be used as fallback if not specified.
+  # This will expand any env var you set in the field, e.g. packager: ${PACKAGER}
+  # packager: GoReleaser <staff@goreleaser.com>
+
+  # The package is signed if a key_file is set
+  # signature:
+  #   # PGP secret key (can also be ASCII-armored), the passphrase is taken
+  #   # from the environment variable $NFPM_RPM_PASSPHRASE with a fallback
+  #   # to $NFPM_PASSPHRASE.
+  #   # This will expand any env var you set in the field, e.g. key_file: ${SIGNING_KEY_FILE}
+  #   key_file: key.gpg
+
+  #   # PGP secret key id in hex format, if it is not set it will select the first subkey
+  #   # that has the signing flag set. You may need to set this if you want to use the primary key as the signing key
+  #   # or to support older versions of RPM < 4.13.0 which cannot validate a signed RPM that used a subkey to sign
+  #   # This will expand any env var you set in the field, e.g. key_id: ${RPM_SIGNING_KEY_ID}
+  #   key_id: bc8acdd415bd80b3
